@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: z-demo
+server:
+  port: 5505
+  servlet:
+    context-path: /

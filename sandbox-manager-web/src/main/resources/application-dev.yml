@@ -1,0 +1,39 @@
+debug: false
+server:
+  port: 8010
+  tomcat:
+    uri-encoding: UTF-8
+    max-connections: 1000
+spring:
+  application:
+    name: elab-damai-user
+  http:
+    multipart:
+      max-request-size: 1MB
+      max-file-size: 1MB
+  avue:
+    debug: false
+    accept-token: kytxygsjs1314
+#default:
+#  minIdle: 10
+#  validationQuery: SELECT 1
+#  initialSize: 5
+#  maxWait: 60000
+#  filters: stat
+#  poolPreparedStatements: true
+#  url: jdbc:mysql://101.231.166.56/marketing_db?characterEncoding=UTF-8&connectTimeout=60000&socketTimeout=60000&useSSL=false
+#  logAbandoned: true
+#  password: Elab@123
+#  maxOpenPreparedStatements: 1
+#  testOnBorrow: false
+#  testWhileIdle: true
+#  removeAbandoned: true
+#  minEvictableIdleTimeMillis: 300000
+#  timeBetweenEvictionRunsMillis: 60000
+#  testOnReturn: false
+#  removeAbandonedTimeout: 3600
+#  driverClassName: com.mysql.jdbc.Driver
+#  querytimeout: 2400
+#  maxActive: 50
+#  username: root
+
