@@ -3,7 +3,9 @@ package com.alibaba.jvm.sandbox.module.manager.model;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.alibaba.jvm.sandbox.module.manager.util.IPUtils;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
+import sun.net.util.IPAddressUtil;
 
 
 /**
@@ -17,6 +19,8 @@ import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
  * @author zhaoyb1990
  */
 public class ApplicationModel {
+
+    private String appId;
 
     private String appName;
 
@@ -57,6 +61,15 @@ public class ApplicationModel {
         return appName;
     }
 
+
+    public String getAppId() {
+        if (appId == null) {
+            // 并发也没问题，反正幂等
+            appId = getAppName() + "-" + IPUtils.genIpHex(host);
+        }
+        return appId;
+    }
+
     public void setAppName(String appName) {
         this.appName = appName;
     }
@@ -84,4 +97,6 @@ public class ApplicationModel {
     public void setFusing(boolean fusing) {
         this.fusing = fusing;
     }
+
+
 }

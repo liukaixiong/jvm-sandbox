@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>z-demo</artifactId>
+    <artifactId>sandbox-springboot-demo</artifactId>
 
     <dependencies>
         <dependency>

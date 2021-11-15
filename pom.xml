@@ -164,6 +164,7 @@
         <module>sandbox-springboot-demo</module>
         <module>sandbox-manager-module</module>
         <module>sandbox-manager-web</module>
+        <module>sandbox-manager-core</module>
     </modules>
 
     <dependencyManagement>

@@ -2,7 +2,7 @@ spring:
   profiles:
     active: dev
   application:
-    name: z-demo
+    name: sandbox-springboot-demo
 server:
   port: 5505
   servlet:

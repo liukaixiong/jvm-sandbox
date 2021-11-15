@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.util;
 
-import com.alibaba.jvm.sandbox.module.manager.Constants;
+import com.lkx.jvm.sandbox.core.Constants;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -58,8 +58,23 @@ public class PropertyUtil {
         return getPropertyOrDefault(Constants.WEB_CONSOLE_URL_NAME, Constants.DEFAULT_CONFIG_WEB_CONSOLE_VALUE);
     }
 
+    /**
+     * 获取心跳的信息
+     *
+     * @return
+     */
     public static String getWebHeartbeatPath() {
-        return getPropertyOrDefault(Constants.WEB_CONSOLE_HEARTBEAT_NAME, Constants.DEFAULT_CONFIG_WEB_HEARTBEAT_VALUE);
+        return getWebConsolePath() + getPropertyOrDefault(Constants.WEB_CONSOLE_HEARTBEAT_NAME, Constants.DEFAULT_CONFIG_WEB_HEARTBEAT_VALUE);
     }
+
+    /**
+     * 获取命令配置
+     *
+     * @return
+     */
+    public static String getWebConfigCommandPath() {
+        return getWebConsolePath() + getPropertyOrDefault(Constants.WEB_CONSOLE_COMMAND_CONFIG_NAME, Constants.DEFAULT_CONFIG_WEB_COMMAND_CONFIG_VALUE);
+    }
+
 
 }

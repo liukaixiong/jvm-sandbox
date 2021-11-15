@@ -13,41 +13,17 @@
     <artifactId>sandbox-manager-module</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>3.12.1</version>
-        </dependency>
-        <!-- DEBUG工程公共依赖模块，SANDBOX父工程托管 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
-        </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-            <version>4.1</version>
-        </dependency>
-
-        <!-- DEBUG工程独有依赖模块，所以单独配置并指定了版本 -->
-        <dependency>
-            <groupId>ognl</groupId>
-            <artifactId>ognl</artifactId>
-            <version>3.0.8</version>
+            <groupId>com.alibaba.jvm.sandbox</groupId>
+            <artifactId>sandbox-manager-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.2.10.RELEASE</version>
         </dependency>
-
         <!-- 给DEBUG模块单独配置一个日志 -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -60,12 +36,37 @@
             <version>1.2.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
-        </dependency>
-
-
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-lib-src-webapps</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- <delete dir="src/main/webapp/WEB-INF/lib" />-->
+                                <copy todir="E:\\study\\sandbox\\sandbox-module"
+                                      overwrite="true"><!--执行复制操作,todir的值是将要复制jar包到的地方,overwrite是否重写-->
+                                    <fileset
+                                            dir="${project.build.directory}"><!--${project.build.directory}值是你的target目录-->
+                                        <include
+                                                name="sandbox-manager-module-1.3.3-jar-with-dependencies.jar"/><!--target目录下的jar包-->
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -5,11 +5,11 @@ import com.alibaba.jvm.sandbox.api.Module;
 import com.alibaba.jvm.sandbox.api.ModuleException;
 import com.alibaba.jvm.sandbox.api.resource.ConfigInfo;
 import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
-import com.alibaba.jvm.sandbox.module.manager.Constants;
 import com.alibaba.jvm.sandbox.module.manager.model.ApplicationModel;
-import com.alibaba.jvm.sandbox.module.manager.util.HttpUtil;
-import com.alibaba.jvm.sandbox.module.manager.util.JsonUtils;
+import com.lkx.jvm.sandbox.core.Constants;
+import com.alibaba.jvm.sandbox.module.manager.components.ApplicationConfig;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
+import com.lkx.jvm.sandbox.core.util.HttpUtil;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +33,8 @@ public class HeartbeatHandler {
     private static final long FREQUENCY = 10;
 
     // 获取心跳发送信息
-    private final static String HEARTBEAT_PATH = PropertyUtil.getWebHeartbeatPath();
 
-    private final static String HEARTBEAT_URL = PropertyUtil.getWebConsolePath() + HEARTBEAT_PATH;
+    private final static String HEARTBEAT_URL = PropertyUtil.getWebHeartbeatPath();
 
     private static ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1,
             new BasicThreadFactory.Builder().namingPattern("heartbeat-pool-%d").daemon(true).build());
@@ -50,6 +49,7 @@ public class HeartbeatHandler {
     }
 
     public synchronized void start() {
+        // 为每一个应用做一个标记
         if (initialize.compareAndSet(false, true)) {
             executorService.scheduleAtFixedRate(new Runnable() {
                 @Override
@@ -60,7 +60,7 @@ public class HeartbeatHandler {
                         logger.error("error occurred when report heartbeat", e);
                     }
                 }
-            }, 0, FREQUENCY, TimeUnit.SECONDS);
+            }, 10, FREQUENCY, TimeUnit.SECONDS);
         }
     }
 
@@ -73,10 +73,11 @@ public class HeartbeatHandler {
     private void innerReport() {
         String runtimeBeanName = ManagementFactory.getRuntimeMXBean().getName();
         String pid = runtimeBeanName.split("@")[0];
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("appName", ApplicationModel.instance().getAppName());
-        params.put("ip", ApplicationModel.instance().getHost());
-        params.put("environment", ApplicationModel.instance().getEnvironment());
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("appId", ApplicationConfig.getInstance().getAppId());
+        params.put("appName", ApplicationConfig.getInstance().getApplicationName());
+        params.put("ip", ApplicationConfig.getInstance().getHost());
+        params.put("environment", ApplicationConfig.getInstance().getEnvironment());
         params.put("port", configInfo.getServerAddress().getPort() + "");
         params.put("version", configInfo.getVersion());
         params.put("pid", pid);
@@ -86,14 +87,14 @@ public class HeartbeatHandler {
         params.put("isEnableUnsafe", configInfo.isEnableUnsafe() + "");
 
         // 注册模块
-        params.put("moduleList", JsonUtils.toJsonString(searchModule()));
+        params.put("moduleList", searchModule());
 
         try {
             params.put("status", moduleManager.isActivated(Constants.DEFAULT_MODULE_ID) ? "ACTIVE" : "FROZEN");
         } catch (ModuleException e) {
             // ignore
         }
-        HttpUtil.doPost(HEARTBEAT_URL, params);
+        HttpUtil.invokePostJson(HEARTBEAT_URL, null, params);
     }
 
 
@@ -102,11 +103,6 @@ public class HeartbeatHandler {
         for (final Module module : moduleManager.list()) {
             final Information info = module.getClass().getAnnotation(Information.class);
             try {
-//                final boolean isActivated = moduleManager.isActivated(info.id());
-//                final boolean isLoaded = moduleManager.isLoaded(info.id());
-//                final int cCnt = moduleManager.cCnt(info.id());
-//                final int mCnt = moduleManager.mCnt(info.id());
-
                 Map<String, Object> moduleMap = new LinkedHashMap<>();
                 moduleMap.put("id", info.id());
                 moduleMap.put("isLoaded", moduleManager.isLoaded(info.id()));

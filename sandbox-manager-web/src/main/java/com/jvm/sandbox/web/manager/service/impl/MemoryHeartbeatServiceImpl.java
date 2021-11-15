@@ -4,7 +4,8 @@ import com.jvm.sandbox.web.manager.model.HeartbeatModel;
 import com.jvm.sandbox.web.manager.service.HeartbeatService;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 基于内存的心跳存储
@@ -15,15 +16,20 @@ import java.util.List;
  */
 @Component
 public class MemoryHeartbeatServiceImpl implements HeartbeatService {
+    private Map<String, HeartbeatModel> heartbeatCache = new ConcurrentHashMap<>();
 
     @Override
     public List<HeartbeatModel> getList() {
-        return null;
+        return new ArrayList<>(heartbeatCache.values());
     }
 
     @Override
     public void register(HeartbeatModel heartbeatModel) {
-
+        heartbeatCache.put(heartbeatModel.getAppId(), heartbeatModel);
     }
 
+    @Override
+    public HeartbeatModel getObject(String id) {
+        return heartbeatCache.get(id);
+    }
 }

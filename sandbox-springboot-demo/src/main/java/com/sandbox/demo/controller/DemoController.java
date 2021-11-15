@@ -1,9 +1,6 @@
 package com.sandbox.demo.controller;
 
-import com.sandbox.demo.example.Clock;
-import com.sandbox.demo.example.Trace;
-import com.sandbox.demo.example.User;
-import com.sandbox.demo.example.Watch;
+import com.sandbox.demo.example.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +16,18 @@ import java.util.Map;
  */
 @RestController
 public class DemoController {
+
+    @GetMapping(value = "/maxSize", produces = "application/json;charset=UTF-8")
+    public Map<String, Object> maxSize(@RequestParam("number") String number) {
+        new Size().run(Integer.valueOf(number));
+        return trues();
+    }
+
+    @GetMapping(value = "/stack", produces = "application/json;charset=UTF-8")
+    public Map<String, Object> stack(@RequestParam("number") Integer number) {
+        new Stack().run(number);
+        return trues();
+    }
 
     @RequestMapping(value = "/trace", produces = "application/json;charset=UTF-8")
     public Map<String, Object> trace(@RequestParam("body") String body) {

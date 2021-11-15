@@ -1,4 +1,4 @@
-package com.alibaba.jvm.sandbox.module.manager.util;
+package com.lkx.jvm.sandbox.core.util;
 
 import okhttp3.*;
 import org.apache.commons.collections4.MapUtils;
@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.beans.ConstructorProperties;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -57,19 +58,19 @@ public class HttpUtil {
     }
 
 
-    public static String getPureUrL(Object scheme, Object host){
+    public static String getPureUrL(Object scheme, Object host) {
         return String.valueOf(scheme) + "://" + String.valueOf(host);
     }
 
-    public static Map<String, String> getParamMap(String paramStr){
+    public static Map<String, String> getParamMap(String paramStr) {
 
         Map<String, String> paramMap = new HashMap<String, String>();
-        if (StringUtils.isBlank(paramStr) || "null".equalsIgnoreCase(paramStr)){
+        if (StringUtils.isBlank(paramStr) || "null".equalsIgnoreCase(paramStr)) {
             return paramMap;
         }
 
         String[] split = paramStr.split(PARAM_SEPARATE);
-        if (split.length == 0){
+        if (split.length == 0) {
             return paramMap;
         }
 
@@ -277,16 +278,36 @@ public class HttpUtil {
     public static Resp invokePostBody(String url,
                                       Map<String, String> headers,
                                       String body) {
-        return invokePostBody(url, headers, null ,body);
+        return invokePostBody(url, headers, null, body);
+    }
+
+    public static Resp invokePostJson(String url,
+                                      Object parmaObject) {
+        return invokePostJson(url, null, parmaObject);
+    }
+
+    public static Resp invokePostJson(String url,
+                                      Map<String, String> headers,
+                                      Object parmaObject) {
+        if (headers == null) {
+            headers = new LinkedHashMap<>();
+        }
+        // 不管有没有
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+        if (parmaObject instanceof String) {
+            return invokePostBody(url, headers, (String) parmaObject);
+        } else {
+            return invokePostBody(url, headers, JsonUtils.toJsonString(parmaObject));
+        }
     }
 
     /**
      * Post方法请求
      *
-     * @param url     url地址
-     * @param headers 请求头
+     * @param url      url地址
+     * @param headers  请求头
      * @param paramMap 请求参数
-     * @param body    请求body
+     * @param body     请求body
      * @return resp
      */
     public static Resp invokePostBody(String url,
@@ -306,7 +327,7 @@ public class HttpUtil {
             if (!StringUtils.contains(url, QUESTION_SEPARATE)) {
                 urlBuilder.append(QUESTION_SEPARATE).append("_r=1");
             }
-            for (Map.Entry<String,String[]> entry : paramMap.entrySet()) {
+            for (Map.Entry<String, String[]> entry : paramMap.entrySet()) {
                 for (String value : entry.getValue()) {
                     urlBuilder.append(PARAM_SEPARATE)
                             .append(entry.getKey())
@@ -377,7 +398,7 @@ public class HttpUtil {
         return body == null ? "" : body.string();
     }
 
-    enum HttpMethod {
+    public enum HttpMethod {
 
         /**
          *

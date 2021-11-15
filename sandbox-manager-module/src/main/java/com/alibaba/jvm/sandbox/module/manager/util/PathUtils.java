@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.util;
 
-import com.alibaba.jvm.sandbox.module.manager.Constants;
+import com.lkx.jvm.sandbox.core.Constants;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;

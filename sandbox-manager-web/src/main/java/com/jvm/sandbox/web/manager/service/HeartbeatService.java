@@ -28,4 +28,6 @@ public interface HeartbeatService {
      */
     public void register(HeartbeatModel heartbeatModel);
 
+    public HeartbeatModel getObject(String id);
+
 }

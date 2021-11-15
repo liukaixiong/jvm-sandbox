@@ -1,5 +1,6 @@
 package com.jvm.sandbox.web.manager.model;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,7 @@ public class HeartbeatModel {
      * version : 1.3.3
      * status : ACTIVE
      */
+    private String appId;
     private String appName;
     private String ip;
     private String port;
@@ -33,6 +35,23 @@ public class HeartbeatModel {
     private String namespace;
     private String version;
     private String status;
+    private Date updateTime = new Date();
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public String getMode() {
         return mode;
