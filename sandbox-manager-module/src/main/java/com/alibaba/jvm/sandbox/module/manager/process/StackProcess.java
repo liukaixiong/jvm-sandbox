@@ -5,8 +5,6 @@ import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
 import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
 
-import java.util.Map;
-
 /**
  * 查看当前方法被执行的链路栈
  *
@@ -27,7 +25,7 @@ public class StackProcess extends AbstractCommandInvoke {
 
     @Override
     public CommandEnums commandName() {
-        return CommandEnums.time;
+        return CommandEnums.stack;
     }
 
     @Override

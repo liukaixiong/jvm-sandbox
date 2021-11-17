@@ -1,12 +1,11 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
-import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
-import com.alibaba.jvm.sandbox.api.listener.ext.AdviceListener;
+import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatchBuilder;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
-import com.alibaba.jvm.sandbox.module.manager.process.intercept.CommandPostProcess;
-import com.lkx.jvm.sandbox.core.enums.CommandEnums;
+import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
+import com.alibaba.jvm.sandbox.module.manager.process.callback.ListCommandPostCallback;
 import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
@@ -40,12 +39,12 @@ public class CommandProcessManager {
     /**
      * 执行全局观察
      */
-    public void invokeGlobalWatch() throws Exception {
+    public EventWatcher invokeGlobalWatch() throws Exception {
         String command = commandInfoModel.getCommand();
         AbstractCommandInvoke commandInvoke = GroupContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
         EventWatcher eventWatcher = commandInvoke.getEventWatcher(this.watcher);
         if (eventWatcher == null) {
-            new EventWatchBuilder(this.watcher)
+            eventWatcher = new EventWatchBuilder(this.watcher)
                     .onClass(classNamePattern).includeBootstrap()
                     .includeSubClasses()
                     .onBehavior(methodPattern)
@@ -54,6 +53,7 @@ public class CommandProcessManager {
                     .onWatch(commandInvoke);
             logger.info("注册全局事件,命令:[" + command + "] 类:" + classNamePattern + "，方法:" + methodPattern);
         }
+        return eventWatcher;
     }
 
     /**
@@ -64,12 +64,20 @@ public class CommandProcessManager {
 
         CountDownLatch countDownLatch = new CountDownLatch(ObjectUtils.defaultIfNull(commandInfoModel.getInvokeNumber(), Integer.MAX_VALUE));
 
-        AbstractCommandInvoke commandInvoke = GroupContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel, new CommandPostProcess() {
+
+        ListCommandPostCallback listCommandPostCallback = new ListCommandPostCallback();
+
+        listCommandPostCallback.setCallback(new CommandPostCallback() {
             @Override
-            public void beforeSend(Object req) {
+            public void callback(CommandInfoModel commandInfoModel, Object req) {
                 countDownLatch.countDown();
+                commandInfoModel.setHowManyCount(countDownLatch.getCount());
             }
         });
+
+        AbstractCommandInvoke commandInvoke = GroupContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
+        commandInvoke.setCommandPostProcess(listCommandPostCallback);
+
         Long timeOut = ObjectUtils.defaultIfNull(commandInfoModel.getTimeOut(), -1L);
 
         EventWatcher watcher = new EventWatchBuilder(this.watcher)
@@ -86,9 +94,6 @@ public class CommandProcessManager {
                 countDownLatch.await(timeOut, TimeUnit.MILLISECONDS);
             }
             logger.info("该监听执行完毕");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            logger.error("监听异常", e);
         } finally {
             watcher.onUnWatched();
         }

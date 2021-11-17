@@ -8,8 +8,11 @@ import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.alibaba.jvm.sandbox.module.manager.components.GroupContainerHelper;
 import com.alibaba.jvm.sandbox.module.manager.handler.HeartbeatHandler;
+import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
+import com.alibaba.jvm.sandbox.module.manager.process.callback.HttpCommandLogSendCallback;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
+import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 /**
@@ -29,7 +33,7 @@ import java.util.Set;
  */
 @MetaInfServices(Module.class)
 @Information(id = Constants.DEFAULT_MODULE_ID, version = "0.0.1", author = "liukaixiong")
-public class OnlineManagerModule implements Module, LoadCompleted {
+public class AgentOnlineManagerModule implements Module, LoadCompleted {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,6 +53,10 @@ public class OnlineManagerModule implements Module, LoadCompleted {
         heartbeatHandler.start();
 
         scanPackage("com.alibaba.jvm.sandbox.module.manager.process");
+
+        // 注册回调接口
+        GroupContainerHelper.getInstance().registerList(CommandPostCallback.class, new HttpCommandLogSendCallback());
+
     }
 
     public void scanPackage(String packages) {
@@ -60,7 +68,8 @@ public class OnlineManagerModule implements Module, LoadCompleted {
         candidateComponents.forEach((beanDefinition) -> {
             try {
                 Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
-                AbstractCommandInvoke abstractCommandInvoke = (AbstractCommandInvoke) clazz.newInstance();
+                Constructor constructor = clazz.getDeclaredConstructor(CommandInfoModel.class);
+                AbstractCommandInvoke abstractCommandInvoke = (AbstractCommandInvoke) constructor.newInstance(new Object[]{new CommandInfoModel()});
                 CommandEnums commandEnums = abstractCommandInvoke.commandName();
                 GroupContainerHelper.getInstance().registerCommandInvoke(commandEnums, clazz);
             } catch (Exception e) {

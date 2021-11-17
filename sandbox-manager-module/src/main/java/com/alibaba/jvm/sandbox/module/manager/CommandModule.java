@@ -64,7 +64,11 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
                     CommandInfoModel infoObject = configArray.getObject(i, CommandInfoModel.class);
                     // 纬度补全
                     // 执行全局任务
-                    taskManager.registerGlobalTask(watcher, infoObject);
+                    try {
+                        taskManager.registerGlobalTask(watcher, infoObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -100,7 +104,7 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
         String methodPattern = param.get("methodPattern");
         String command = param.get("command");
         String timeOut = param.getOrDefault("timeOut", "-1");
-        String number = param.getOrDefault("number", "100");
+        String number = param.getOrDefault("invokeNumber", "100");
 
         CheckUtils.isRequireNotNull(classNamePattern, "classNamePattern");
         CheckUtils.isRequireNotNull(methodPattern, "methodPattern");

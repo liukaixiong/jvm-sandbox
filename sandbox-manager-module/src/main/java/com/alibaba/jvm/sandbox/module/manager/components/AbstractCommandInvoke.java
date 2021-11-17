@@ -1,9 +1,10 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
+import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.listener.ext.AdviceListener;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
-import com.alibaba.jvm.sandbox.module.manager.process.intercept.CommandPostProcess;
+import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
 import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
@@ -11,6 +12,7 @@ import com.lkx.jvm.sandbox.core.model.command.CommandLogResponse;
 import com.lkx.jvm.sandbox.core.util.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import java.util.Date;
 
@@ -25,11 +27,9 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private String commandLogPushUrl = PropertyUtil.getWebConfigCommandLogPushPath();
-
     private CommandInfoModel commandObject;
 
-    private CommandPostProcess commandPostProcess;
+    private CommandPostCallback commandPostProcess;
 
     /**
      * 定义命令列表
@@ -44,11 +44,11 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
      * @param commandObject
      */
     public AbstractCommandInvoke(CommandInfoModel commandObject) {
+        Assert.notNull(commandObject, "commandObject is not null!");
         this.commandObject = commandObject;
     }
 
-    public AbstractCommandInvoke(CommandInfoModel commandObject, CommandPostProcess commandPostProcess) {
-        this.commandObject = commandObject;
+    public void setCommandPostProcess(CommandPostCallback commandPostProcess) {
         this.commandPostProcess = commandPostProcess;
     }
 
@@ -67,17 +67,7 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
      * @param obj
      */
     protected void sendObjectLog(Object obj) {
-
-        this.commandPostProcess.beforeSend(obj);
-
-        CommandLogResponse response = new CommandLogResponse();
-        response.setId(commandObject.getId());
-        response.setData(obj);
-        response.setCreated(new Date());
-        HttpUtil.Resp resp = HttpUtil.invokePostJson(commandLogPushUrl, null, obj);
-        if (!resp.isSuccess()) {
-            logger.error("远程命令执行日志推送失败" + obj + "\t" + resp.getMessage());
-        }
+        this.commandPostProcess.callback(commandObject, obj);
     }
 
     public CommandInfoModel getCommandObject() {

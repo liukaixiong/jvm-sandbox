@@ -7,6 +7,7 @@ import com.jvm.sandbox.web.manager.service.HeartbeatService;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.model.command.CommandConfigRequest;
 import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandLogResponse;
 import com.lkx.jvm.sandbox.core.util.CheckUtils;
 import com.lkx.jvm.sandbox.core.util.HttpUtil;
 import com.lkx.jvm.sandbox.core.util.JsonUtils;
@@ -105,6 +106,19 @@ public class CommandController {
         commandInfoModelList.add(commandInfoModel);
         logger.info("返回默认配置:" + JsonUtils.toJsonString(commandInfoModelList));
         return JsonResult.builder().success(true).data(commandInfoModelList).build();
+    }
+
+    /**
+     * 命令执行日志推送接收
+     *
+     * @param model
+     * @return
+     */
+    @PostMapping(value = Constants.DEFAULT_CONFIG_WEB_COMMAND_PUSH_LOG_VALUE,
+            produces = "application/json;charset=UTF-8")
+    public JsonResult configCommandLogPush(@RequestBody CommandLogResponse model) {
+        logger.info("接收到监听的命令事件: " + JsonUtils.toJsonString(model));
+        return JsonResult.builder().success(true).build();
     }
 
     /**

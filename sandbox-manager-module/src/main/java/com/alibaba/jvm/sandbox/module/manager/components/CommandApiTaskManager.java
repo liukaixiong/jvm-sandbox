@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
+import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.lkx.jvm.sandbox.core.enums.CommandTaskTypeEnums;
 import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
@@ -26,6 +27,12 @@ public class CommandApiTaskManager {
      * 任务线程容器
      */
     private Map<String, Thread> threadTaskCache = new ConcurrentHashMap<>();
+
+    /**
+     * 全局监听事件
+     */
+    private Map<String, EventWatcher> watcherCache = new ConcurrentHashMap<>();
+
     /**
      * 任务详情
      */
@@ -46,7 +53,7 @@ public class CommandApiTaskManager {
             try {
                 eventWatcherProcess.invokeScheduleWatch();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.info("任务 : " + taskId + " 停止," + e.getMessage());
             } finally {
                 // 执行完毕之后
                 commandInfoModel.setStatus(-1);
@@ -64,10 +71,10 @@ public class CommandApiTaskManager {
     /**
      * 注册全局任务
      *
-     * @param watcher
+     * @param moduleEventWatcher
      * @param commandInfoModel
      */
-    public void registerGlobalTask(ModuleEventWatcher watcher, CommandInfoModel commandInfoModel) throws Exception {
+    public void registerGlobalTask(ModuleEventWatcher moduleEventWatcher, CommandInfoModel commandInfoModel) throws Exception {
         commandInfoModel.setAppId(ApplicationConfig.getInstance().getAppId());
         commandInfoModel.setTaskType(CommandTaskTypeEnums.GLOBAL_TASK.name());
         commandInfoModel.setInvokeNumber(Integer.MAX_VALUE);
@@ -75,10 +82,11 @@ public class CommandApiTaskManager {
         commandInfoModel.setTimeOut(-1l);
         String taskId = getTaskId();
         commandInfoModel.setId(taskId);
-        CommandProcessManager eventWatcherProcess = new CommandProcessManager(watcher, commandInfoModel);
-        eventWatcherProcess.invokeGlobalWatch();
+        CommandProcessManager eventWatcherProcess = new CommandProcessManager(moduleEventWatcher, commandInfoModel);
+        EventWatcher watcher = eventWatcherProcess.invokeGlobalWatch();
         commandInfoModel.setStatus(1);
         commandInfoCache.put(taskId, commandInfoModel);
+        watcherCache.put(taskId, watcher);
         logger.info("注册了全局的任务组件:" + commandInfoModel.getCommand() + " -> " + commandInfoModel.getClassNamePattern() + "#" + commandInfoModel.getMethodPattern());
     }
 
@@ -108,10 +116,17 @@ public class CommandApiTaskManager {
             thread.interrupt();
         }
 
+        EventWatcher watcher = watcherCache.get(taskId);
+        if (watcher != null) {
+            watcher.onUnWatched();
+        }
+
         CommandInfoModel commandInfoModel = commandInfoCache.get(taskId);
         if (commandInfoModel != null) {
             commandInfoModel.setStatus(-1);
         }
+
+
         logger.info("命令编号停止: " + taskId);
     }
 
