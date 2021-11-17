@@ -21,6 +21,7 @@ public class Constants {
 
     public final static String DEFAULT_CONFIG_WEB_HEARTBEAT_VALUE = "/heartbeat/push";
     public final static String DEFAULT_CONFIG_WEB_COMMAND_CONFIG_VALUE = "/config/command";
+    public final static String DEFAULT_CONFIG_WEB_COMMAND_PUSH_LOG_VALUE = "/config/command/push/log";
 
     public final static String SANDBOX_VERSION = "1.3.3";
 
@@ -38,6 +39,7 @@ public class Constants {
      */
     public final static String WEB_CONSOLE_HEARTBEAT_NAME = "web.heartbeat.path";
     public final static String WEB_CONSOLE_COMMAND_CONFIG_NAME = "web.config.command.path";
+    public final static String WEB_CONSOLE_COMMAND_CONFIG_LOG_PUSH_NAME = "web.config.command.log.push";
 
     /**
      * 沙箱的暴露http接口路径

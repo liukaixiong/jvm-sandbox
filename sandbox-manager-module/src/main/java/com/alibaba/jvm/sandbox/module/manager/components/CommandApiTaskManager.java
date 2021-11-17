@@ -39,13 +39,19 @@ public class CommandApiTaskManager {
         String taskId = getTaskId();
         commandInfoModel.setId(taskId);
 
-        EventWatcherProcess eventWatcherProcess = new EventWatcherProcess(watcher, commandInfoModel);
+        CommandProcessManager eventWatcherProcess = new CommandProcessManager(watcher, commandInfoModel);
 
         // 命令线程，到时候还是会改用线程池
         Thread thread = new Thread(() -> {
-            eventWatcherProcess.invokeScheduleWatch();
-            // 执行完毕之后
-            commandInfoModel.setStatus(-1);
+            try {
+                eventWatcherProcess.invokeScheduleWatch();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                // 执行完毕之后
+                commandInfoModel.setStatus(-1);
+            }
+
         }, "command-api-" + commandInfoModel.getCommand());
 
         thread.start();
@@ -61,7 +67,7 @@ public class CommandApiTaskManager {
      * @param watcher
      * @param commandInfoModel
      */
-    public void registerGlobalTask(ModuleEventWatcher watcher, CommandInfoModel commandInfoModel) {
+    public void registerGlobalTask(ModuleEventWatcher watcher, CommandInfoModel commandInfoModel) throws Exception {
         commandInfoModel.setAppId(ApplicationConfig.getInstance().getAppId());
         commandInfoModel.setTaskType(CommandTaskTypeEnums.GLOBAL_TASK.name());
         commandInfoModel.setInvokeNumber(Integer.MAX_VALUE);
@@ -69,14 +75,14 @@ public class CommandApiTaskManager {
         commandInfoModel.setTimeOut(-1l);
         String taskId = getTaskId();
         commandInfoModel.setId(taskId);
-        EventWatcherProcess eventWatcherProcess = new EventWatcherProcess(watcher, commandInfoModel);
+        CommandProcessManager eventWatcherProcess = new CommandProcessManager(watcher, commandInfoModel);
         eventWatcherProcess.invokeGlobalWatch();
         commandInfoModel.setStatus(1);
         commandInfoCache.put(taskId, commandInfoModel);
         logger.info("注册了全局的任务组件:" + commandInfoModel.getCommand() + " -> " + commandInfoModel.getClassNamePattern() + "#" + commandInfoModel.getMethodPattern());
     }
 
-    private String getTaskId() {
+    protected String getTaskId() {
         return UUID.randomUUID().toString();
     }
 

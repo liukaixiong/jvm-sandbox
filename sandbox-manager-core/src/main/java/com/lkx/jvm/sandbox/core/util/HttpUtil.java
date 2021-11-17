@@ -128,7 +128,9 @@ public class HttpUtil {
         FormBody.Builder builder = new FormBody.Builder();
         if (MapUtils.isNotEmpty(params)) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
-                builder.add(entry.getKey(), entry.getValue());
+                if (entry.getValue() != null) {
+                    builder.add(entry.getKey(), entry.getValue());
+                }
             }
         }
         Request request = new Request.Builder().post(builder.build()).url(url).build();

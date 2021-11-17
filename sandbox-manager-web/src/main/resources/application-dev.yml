@@ -12,7 +12,7 @@ spring:
       max-request-size: 1MB
       max-file-size: 1MB
   avue:
-    debug: false
+    debug: true
     accept-token: kytxygsjs1314
 #default:
 #  minIdle: 10

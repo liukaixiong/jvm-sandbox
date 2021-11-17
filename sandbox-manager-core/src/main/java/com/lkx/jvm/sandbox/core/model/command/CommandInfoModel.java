@@ -1,6 +1,7 @@
 package com.lkx.jvm.sandbox.core.model.command;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 命令执行详情返回结果
@@ -49,10 +50,26 @@ public class CommandInfoModel {
      * 剩余执行次数
      */
     private Long howManyCount;
+
+    /**
+     * 拓展参数
+     */
+    private Map<String, Object> extData;
+
+    private Long runTime;
+
     /**
      * 创建时间
      */
     private Date created = new Date();
+
+    public Map<String, Object> getExtData() {
+        return extData;
+    }
+
+    public void setExtData(Map<String, Object> extData) {
+        this.extData = extData;
+    }
 
     public String getAppId() {
         return appId;
@@ -65,8 +82,6 @@ public class CommandInfoModel {
     public void setRunTime(Long runTime) {
         this.runTime = runTime;
     }
-
-    private Long runTime;
 
     public Integer getStatus() {
         return status;
@@ -98,7 +113,11 @@ public class CommandInfoModel {
      * @return
      */
     public Long getRunTime() {
-        return System.currentTimeMillis() - created.getTime();
+        if (status != null && status != -1) {
+            return System.currentTimeMillis() - created.getTime();
+        } else {
+            return this.runTime;
+        }
     }
 
     public String getCommand() {

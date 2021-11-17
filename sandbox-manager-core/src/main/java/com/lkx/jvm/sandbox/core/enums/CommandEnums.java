@@ -1,4 +1,4 @@
-package com.alibaba.jvm.sandbox.module.manager.enums;
+package com.lkx.jvm.sandbox.core.enums;
 
 /**
  * @author liukaixiong
@@ -7,8 +7,10 @@ package com.alibaba.jvm.sandbox.module.manager.enums;
  */
 public enum CommandEnums {
 
-    TRACE("查询方法的执行链路信息"),
-    STACK("查找被调用方法上层方法栈");
+    trace("查询方法的执行链路信息"),
+    time("查询方法的耗费时长"),
+    log("通过日志装饰方法"),
+    stack("查找被调用方法上层方法栈");
 
     private String describe;
 

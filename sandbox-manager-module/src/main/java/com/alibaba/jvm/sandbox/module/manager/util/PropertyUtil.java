@@ -76,5 +76,13 @@ public class PropertyUtil {
         return getWebConsolePath() + getPropertyOrDefault(Constants.WEB_CONSOLE_COMMAND_CONFIG_NAME, Constants.DEFAULT_CONFIG_WEB_COMMAND_CONFIG_VALUE);
     }
 
+    /**
+     * 获取推送命令日志的推送路径
+     * @return
+     */
+    public static String getWebConfigCommandLogPushPath() {
+        return getWebConsolePath() + getPropertyOrDefault(Constants.WEB_CONSOLE_COMMAND_CONFIG_LOG_PUSH_NAME, Constants.DEFAULT_CONFIG_WEB_COMMAND_PUSH_LOG_VALUE);
+    }
+
 
 }
