@@ -1,10 +1,7 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
-import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
-import com.alibaba.jvm.sandbox.module.manager.process.callback.HttpCommandLogSendCallback;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
-import org.apache.commons.collections.iterators.ArrayListIterator;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -41,6 +38,14 @@ public class GroupContainerHelper {
         list.add(object);
     }
 
+    public <T> T getObject(String key, Class<T> clazz) {
+        return (T) groupMap.get(clazz.getSimpleName() + "-" + key);
+    }
+
+    public <T> void registerObject(String key, T object, Class<T> clazz) {
+        groupMap.put(clazz.getSimpleName() + "-" + key, object);
+    }
+
     /**
      * 获取一组接口的实现集合
      *
@@ -52,13 +57,13 @@ public class GroupContainerHelper {
         return (List<T>) groupMap.get(interfaces.getSimpleName());
     }
 
-    public AbstractCommandInvoke getCommandInvoke(String commandEnums, CommandInfoModel commandInfoModel) throws Exception {
+    public AbstractCommandInvoke getCommandInvoke(String commandEnums, CommandWatcherInfoModel commandInfoModel) throws Exception {
         Class clazz = (Class) groupMap.get(AbstractCommandInvoke.class.getSimpleName() + "-" + commandEnums);
-        Constructor constructor = clazz.getDeclaredConstructor(CommandInfoModel.class);
+        Constructor constructor = clazz.getDeclaredConstructor(CommandWatcherInfoModel.class);
         return (AbstractCommandInvoke) constructor.newInstance(new Object[]{commandInfoModel});
     }
 
-    public void registerCommandInvoke(CommandEnums commandEnums, Class clazz) {
+    public void registerWatcherCommandInvoke(CommandEnums.Watcher commandEnums, Class clazz) {
         groupMap.put(AbstractCommandInvoke.class.getSimpleName() + "-" + commandEnums.name(), clazz);
     }
 

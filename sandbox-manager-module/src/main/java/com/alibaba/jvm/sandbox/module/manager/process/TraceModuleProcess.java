@@ -4,7 +4,7 @@ import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.alibaba.jvm.sandbox.module.manager.components.textui.TTree;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 /**
  * 描述: 链路追踪
@@ -21,13 +21,13 @@ public class TraceModuleProcess extends AbstractCommandInvoke {
      *
      * @param commandObject
      */
-    public TraceModuleProcess(CommandInfoModel commandObject) {
+    public TraceModuleProcess(CommandWatcherInfoModel commandObject) {
         super(commandObject);
     }
 
     @Override
-    public CommandEnums commandName() {
-        return CommandEnums.trace;
+    public CommandEnums.Watcher commandName() {
+        return CommandEnums.Watcher.trace;
     }
 
     private String getTracingTitle(final Advice advice) {

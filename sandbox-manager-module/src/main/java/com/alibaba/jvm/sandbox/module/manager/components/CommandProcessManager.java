@@ -1,12 +1,11 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
-import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatchBuilder;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
 import com.alibaba.jvm.sandbox.module.manager.process.callback.ListCommandPostCallback;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,9 @@ public class CommandProcessManager {
     private ModuleEventWatcher watcher;
     private String classNamePattern;
     private String methodPattern;
-    private CommandInfoModel commandInfoModel;
+    private CommandWatcherInfoModel commandInfoModel;
 
-    public CommandProcessManager(ModuleEventWatcher watcher, CommandInfoModel commandInfoModel) {
+    public CommandProcessManager(ModuleEventWatcher watcher, CommandWatcherInfoModel commandInfoModel) {
         this.watcher = watcher;
         this.classNamePattern = commandInfoModel.getClassNamePattern();
         this.methodPattern = commandInfoModel.getMethodPattern();
@@ -69,7 +68,7 @@ public class CommandProcessManager {
 
         listCommandPostCallback.setCallback(new CommandPostCallback() {
             @Override
-            public void callback(CommandInfoModel commandInfoModel, Object req) {
+            public void callback(CommandWatcherInfoModel commandInfoModel, Object req) {
                 countDownLatch.countDown();
                 commandInfoModel.setHowManyCount(countDownLatch.getCount());
             }

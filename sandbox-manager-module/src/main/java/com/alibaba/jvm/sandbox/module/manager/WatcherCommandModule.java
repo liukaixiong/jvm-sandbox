@@ -6,7 +6,7 @@ import com.alibaba.jvm.sandbox.api.LoadCompleted;
 import com.alibaba.jvm.sandbox.api.Module;
 import com.alibaba.jvm.sandbox.api.annotation.Command;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
-import com.alibaba.jvm.sandbox.module.manager.components.ApplicationConfig;
+import com.alibaba.jvm.sandbox.module.manager.components.SpringApplicationConfig;
 import com.alibaba.jvm.sandbox.module.manager.components.CommandApiTaskManager;
 import com.alibaba.jvm.sandbox.module.manager.components.ParamSupported;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
@@ -14,7 +14,7 @@ import com.alibaba.jvm.sandbox.module.manager.util.ResponseUtils;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.enums.CommandTaskTypeEnums;
 import com.lkx.jvm.sandbox.core.model.command.CommandConfigRequest;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import com.lkx.jvm.sandbox.core.model.response.JsonResult;
 import com.lkx.jvm.sandbox.core.util.CheckUtils;
 import com.lkx.jvm.sandbox.core.util.HttpUtil;
@@ -29,15 +29,15 @@ import java.net.HttpURLConnection;
 import java.util.Map;
 
 /**
- * 在线命令模块
+ * 在线观察命令模块
  *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2021/11/11 - 10:11
  */
 @MetaInfServices(Module.class)
-@Information(id = Constants.MODULE_COMMAND_HTTP_ID, version = "0.0.1", author = "liukaixiong")
-public class CommandModule extends ParamSupported implements Module, LoadCompleted {
+@Information(id = Constants.MODULE_COMMAND_WATCHER_HTTP_ID, version = "0.0.1", author = "liukaixiong", mode = {Information.Mode.AGENT})
+public class WatcherCommandModule extends ParamSupported implements Module, LoadCompleted {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private final static String CONFIG_COMMAND_URL = PropertyUtil.getWebConfigCommandPath();
@@ -48,8 +48,8 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
     @Override
     public void loadCompleted() {
         CommandConfigRequest request = new CommandConfigRequest();
-        request.setApplicationName(ApplicationConfig.getInstance().getApplicationName());
-        request.setEnv(ApplicationConfig.getInstance().getEnvironment().toString());
+        request.setApplicationName(SpringApplicationConfig.getInstance().getApplicationName());
+        request.setEnv(SpringApplicationConfig.getInstance().getEnvironment().toString());
         HttpUtil.Resp resp = HttpUtil.invokePostJson(CONFIG_COMMAND_URL, request);
         int code = resp.getCode();
         if (code == HttpURLConnection.HTTP_OK) {
@@ -61,13 +61,13 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
                 logger.info("从客户端拉取该命令类型的配置: " + JsonUtils.toJsonString(data));
                 JSONArray configArray = (JSONArray) data;
                 for (int i = 0; i < configArray.size(); i++) {
-                    CommandInfoModel infoObject = configArray.getObject(i, CommandInfoModel.class);
+                    CommandWatcherInfoModel infoObject = configArray.getObject(i, CommandWatcherInfoModel.class);
                     // 纬度补全
                     // 执行全局任务
                     try {
                         taskManager.registerGlobalTask(watcher, infoObject);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("注册全局任务异常", e);
                     }
                 }
             }
@@ -91,7 +91,7 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
     public void commandRegister(Map<String, String> param, HttpServletResponse response) throws Exception {
         logger.info("接收到参数: " + param);
         try {
-            CommandInfoModel commandInfoModel = builderCommandInfo(param);
+            CommandWatcherInfoModel commandInfoModel = builderCommandInfo(param);
             taskManager.registerScheduleTask(watcher, commandInfoModel);
             ResponseUtils.writeJson(response, JsonResult.builder().success(true).build());
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
         }
     }
 
-    protected CommandInfoModel builderCommandInfo(Map<String, String> param) {
+    protected CommandWatcherInfoModel builderCommandInfo(Map<String, String> param) {
         String classNamePattern = param.get("classNamePattern");
         String methodPattern = param.get("methodPattern");
         String command = param.get("command");
@@ -109,8 +109,8 @@ public class CommandModule extends ParamSupported implements Module, LoadComplet
         CheckUtils.isRequireNotNull(classNamePattern, "classNamePattern");
         CheckUtils.isRequireNotNull(methodPattern, "methodPattern");
 
-        CommandInfoModel commandInfoModel = new CommandInfoModel();
-        commandInfoModel.setAppId(ApplicationConfig.getInstance().getAppId());
+        CommandWatcherInfoModel commandInfoModel = new CommandWatcherInfoModel();
+        commandInfoModel.setAppId(SpringApplicationConfig.getInstance().getAppId());
         commandInfoModel.setCommand(command);
         commandInfoModel.setClassNamePattern(classNamePattern);
         commandInfoModel.setMethodPattern(methodPattern);

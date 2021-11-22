@@ -29,7 +29,7 @@ import java.util.Map;
  * @date 2021/11/9 - 16:53
  */
 @MetaInfServices(Module.class)
-@Information(id = Constants.SPRING_BEAN_MODULE_ID, version = "0.0.1", author = "liukaixiong")
+@Information(id = Constants.SPRING_BEAN_MODULE_ID, version = "0.0.1", author = "liukaixiong", mode = Information.Mode.AGENT)
 public class SpringBeanModule implements Module, LoadCompleted {
 
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -52,7 +52,6 @@ public class SpringBeanModule implements Module, LoadCompleted {
                     @Override
                     protected void before(Advice advice) throws Throwable {
                         try {
-                            Object attachment = advice.attachment();
                             Object factory = advice.getParameterArray()[0];
                             SpringContextContainer.getInstance().setApplicationContext(factory);
                             SpringContextContainer.getInstance().setLoad(true);
@@ -64,31 +63,27 @@ public class SpringBeanModule implements Module, LoadCompleted {
                         }
                     }
                 }), Event.Type.BEFORE, Event.Type.RETURN);
-
-
         // 我想知道Spring的容器启动了多久.
-        new EventWatchBuilder(watcher)
-                .onClass("org.springframework.context.support.AbstractApplicationContext")
-                .onBehavior("refresh")
-                .onWatch(new AdviceAdapterListener(new AdviceListener() {
-                    @Override
-                    protected void before(Advice advice) throws Throwable {
-                        Map<String, Object> container = new HashMap<>();
-                        container.put("startTime", System.currentTimeMillis());
-                        log.info("spring 开始构建: ");
-                        advice.attach(container);
-                    }
-
-                    @Override
-                    protected void after(Advice advice) throws Throwable {
-                        Map<String, Object> container = advice.attachment();
-                        Long startTime = (Long) container.get("startTime");
-                        long time = System.currentTimeMillis() - startTime;
-                        log.info("当前容器耗时 : " + time);
-                    }
-                }), Event.Type.BEFORE, Event.Type.RETURN);
-
-
+//        new EventWatchBuilder(watcher)
+//                .onClass("org.springframework.context.support.AbstractApplicationContext")
+//                .onBehavior("refresh")
+//                .onWatch(new AdviceAdapterListener(new AdviceListener() {
+//                    @Override
+//                    protected void before(Advice advice) throws Throwable {
+//                        Map<String, Object> container = new HashMap<>();
+//                        container.put("startTime", System.currentTimeMillis());
+//                        log.info("spring 开始构建: ");
+//                        advice.attach(container);
+//                    }
+//
+//                    @Override
+//                    protected void after(Advice advice) throws Throwable {
+//                        Map<String, Object> container = advice.attachment();
+//                        Long startTime = (Long) container.get("startTime");
+//                        long time = System.currentTimeMillis() - startTime;
+//                        log.info("当前容器耗时 : " + time);
+//                    }
+//                }), Event.Type.BEFORE, Event.Type.RETURN);
     }
 
 

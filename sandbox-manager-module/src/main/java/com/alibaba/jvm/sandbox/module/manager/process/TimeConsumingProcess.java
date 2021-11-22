@@ -2,7 +2,7 @@ package com.alibaba.jvm.sandbox.module.manager.process;
 
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 /**
  * 查看对应的方法耗时情况.
@@ -18,13 +18,13 @@ public class TimeConsumingProcess extends AbstractCommandInvoke {
      *
      * @param commandObject
      */
-    public TimeConsumingProcess(CommandInfoModel commandObject) {
+    public TimeConsumingProcess(CommandWatcherInfoModel commandObject) {
         super(commandObject);
     }
 
     @Override
-    public CommandEnums commandName() {
-        return CommandEnums.time;
+    public CommandEnums.Watcher commandName() {
+        return CommandEnums.Watcher.time;
     }
 
 }

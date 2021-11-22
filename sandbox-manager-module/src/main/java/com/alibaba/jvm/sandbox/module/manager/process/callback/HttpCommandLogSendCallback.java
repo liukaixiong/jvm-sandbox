@@ -1,8 +1,7 @@
 package com.alibaba.jvm.sandbox.module.manager.process.callback;
 
-import com.alibaba.jvm.sandbox.api.event.Event;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import com.lkx.jvm.sandbox.core.model.command.CommandLogResponse;
 import com.lkx.jvm.sandbox.core.util.HttpUtil;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class HttpCommandLogSendCallback implements CommandPostCallback {
     private String commandLogPushUrl = PropertyUtil.getWebConfigCommandLogPushPath();
 
     @Override
-    public void callback(CommandInfoModel commandInfoModel, Object req) {
+    public void callback(CommandWatcherInfoModel commandInfoModel, Object req) {
         CommandLogResponse response = new CommandLogResponse();
         response.setId(commandInfoModel.getId());
         response.setData(req);

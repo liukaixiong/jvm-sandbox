@@ -6,6 +6,7 @@ import com.alibaba.jvm.sandbox.api.Module;
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.alibaba.jvm.sandbox.api.listener.ext.AdviceListener;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatchBuilder;
+import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.module.manager.components.textui.TTree;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -71,7 +72,7 @@ public class DemoModule implements Module, LoadCompleted {
     }
 
     private void trace(String classPattern, String methodPattern) {
-        new EventWatchBuilder(watcher)
+        EventWatcher watcher = new EventWatchBuilder(this.watcher)
                 .onClass(classPattern).includeSubClasses()
                 .onBehavior(methodPattern)
                 .onWatching()

@@ -3,7 +3,7 @@ package com.alibaba.jvm.sandbox.module.manager.process;
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 /**
  * 查看当前方法被执行的链路栈
@@ -19,13 +19,13 @@ public class StackProcess extends AbstractCommandInvoke {
      *
      * @param commandObject
      */
-    public StackProcess(CommandInfoModel commandObject) {
+    public StackProcess(CommandWatcherInfoModel commandObject) {
         super(commandObject);
     }
 
     @Override
-    public CommandEnums commandName() {
-        return CommandEnums.stack;
+    public CommandEnums.Watcher commandName() {
+        return CommandEnums.Watcher.stack;
     }
 
     @Override

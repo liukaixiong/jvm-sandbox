@@ -1,31 +1,33 @@
 package com.alibaba.jvm.sandbox.module.manager.components;
 
-import com.alibaba.jvm.sandbox.module.manager.model.ApplicationModel;
+import com.alibaba.jvm.sandbox.module.manager.model.ApplicationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Spring配置
+ *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2021/11/11 - 16:20
  */
-public class ApplicationConfig {
+public class SpringApplicationConfig {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private static String SPRING_APPLICATIOIN_NAME = "spring.application.name";
     private static String SPRING_SERVER_PORT = "server.port";
 
-    private ApplicationConfig() {
+    private SpringApplicationConfig() {
     }
 
-    private static ApplicationConfig INSTANCE = new ApplicationConfig();
+    private static SpringApplicationConfig INSTANCE = new SpringApplicationConfig();
 
-    public static ApplicationConfig getInstance() {
+    public static SpringApplicationConfig getInstance() {
         return INSTANCE;
     }
 
     public String getApplicationName() {
-        return getProperties(SPRING_APPLICATIOIN_NAME, ApplicationModel.instance().getAppName());
+        return getProperties(SPRING_APPLICATIOIN_NAME, ApplicationConfig.instance().getAppName());
     }
 
     private String getProperties(String key, String defaultValue) {
@@ -38,14 +40,14 @@ public class ApplicationConfig {
     }
 
     public Object getHost() {
-        return ApplicationModel.instance().getHost();
+        return ApplicationConfig.instance().getHost();
     }
 
     public Object getEnvironment() {
-        return ApplicationModel.instance().getEnvironment();
+        return ApplicationConfig.instance().getEnvironment();
     }
 
     public String getAppId() {
-        return ApplicationModel.instance().getAppId();
+        return ApplicationConfig.instance().getAppId();
     }
 }

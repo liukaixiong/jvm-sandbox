@@ -304,6 +304,15 @@ public class DefaultCoreModuleManager implements CoreModuleManager {
                             true
                     );
                 }
+                // flagTodo 源码改动
+                else if (Instrumentation.class.isAssignableFrom(fieldType)) {
+                    writeField(
+                            resourceField,
+                            module,
+                            inst,
+                            true
+                    );
+                }
 
                 // 其他情况需要输出日志警告
                 else {

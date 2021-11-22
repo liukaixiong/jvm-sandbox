@@ -6,15 +6,29 @@ package com.lkx.jvm.sandbox.core.enums;
  * @date 2021/11/11 - 11:23
  */
 public enum CommandEnums {
+    ;
 
-    trace("查询方法的执行链路信息"),
-    time("查询方法的耗费时长"),
-    log("通过日志装饰方法"),
-    stack("查找被调用方法上层方法栈");
+    public enum Watcher {
+        trace("查询方法的执行链路信息"),
+        time("查询方法的耗费时长"),
+        log("通过日志装饰方法"),
+        stack("查找被调用方法上层方法栈");
 
-    private String describe;
+        private String describe;
 
-    CommandEnums(String describe) {
-        this.describe = describe;
+        Watcher(String describe) {
+            this.describe = describe;
+        }
+    }
+
+    public enum Debug {
+        jad("实时反编译Class文件"),
+        getBean("获取Spring中的bean对象"),
+        getStatic("获取类的静态属性");
+        private String describe;
+
+        Debug(String describe) {
+            this.describe = describe;
+        }
     }
 }

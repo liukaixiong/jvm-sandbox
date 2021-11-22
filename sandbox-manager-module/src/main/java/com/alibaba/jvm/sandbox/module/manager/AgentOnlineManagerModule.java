@@ -7,12 +7,13 @@ import com.alibaba.jvm.sandbox.api.resource.ConfigInfo;
 import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.alibaba.jvm.sandbox.module.manager.components.GroupContainerHelper;
+import com.alibaba.jvm.sandbox.module.manager.debug.CommandDebugProcess;
 import com.alibaba.jvm.sandbox.module.manager.handler.HeartbeatHandler;
 import com.alibaba.jvm.sandbox.module.manager.process.callback.CommandPostCallback;
 import com.alibaba.jvm.sandbox.module.manager.process.callback.HttpCommandLogSendCallback;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.core.type.filter.TypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Constructor;
@@ -32,7 +33,7 @@ import java.util.Set;
  * @author liukaixiong
  */
 @MetaInfServices(Module.class)
-@Information(id = Constants.DEFAULT_MODULE_ID, version = "0.0.1", author = "liukaixiong")
+@Information(id = Constants.DEFAULT_MODULE_ID, version = "0.0.1", author = "liukaixiong", mode = Information.Mode.AGENT)
 public class AgentOnlineManagerModule implements Module, LoadCompleted {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -52,14 +53,33 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted {
         heartbeatHandler = new HeartbeatHandler(configInfo, moduleManager);
         heartbeatHandler.start();
 
-        scanPackage("com.alibaba.jvm.sandbox.module.manager.process");
+        // 注册watcher执行器
+        scanWatcherCommandPackage("com.alibaba.jvm.sandbox.module.manager.process");
+        // 注册debug执行器
+        scanDebugCommandPackage("com.alibaba.jvm.sandbox.module.manager.debug");
 
         // 注册回调接口
         GroupContainerHelper.getInstance().registerList(CommandPostCallback.class, new HttpCommandLogSendCallback());
 
     }
 
-    public void scanPackage(String packages) {
+    private void scanDebugCommandPackage(String packages) {
+        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+        provider.addIncludeFilter(new AssignableTypeFilter(CommandDebugProcess.class));
+        Set<BeanDefinition> candidateComponents = provider.findCandidateComponents(packages);
+        candidateComponents.forEach((beanDefinition) -> {
+            try {
+                Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
+                CommandDebugProcess debugProcess = (CommandDebugProcess) clazz.newInstance();
+                GroupContainerHelper.getInstance().registerObject(debugProcess.command().name(), debugProcess, CommandDebugProcess.class);
+            } catch (Exception e) {
+                // 忽略
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void scanWatcherCommandPackage(String packages) {
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
         provider.addIncludeFilter((MetadataReader mr, MetadataReaderFactory mrf) -> {
             return AbstractCommandInvoke.class.getName().equals(mr.getClassMetadata().getSuperClassName());
@@ -68,10 +88,10 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted {
         candidateComponents.forEach((beanDefinition) -> {
             try {
                 Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
-                Constructor constructor = clazz.getDeclaredConstructor(CommandInfoModel.class);
-                AbstractCommandInvoke abstractCommandInvoke = (AbstractCommandInvoke) constructor.newInstance(new Object[]{new CommandInfoModel()});
-                CommandEnums commandEnums = abstractCommandInvoke.commandName();
-                GroupContainerHelper.getInstance().registerCommandInvoke(commandEnums, clazz);
+                Constructor constructor = clazz.getDeclaredConstructor(CommandWatcherInfoModel.class);
+                AbstractCommandInvoke abstractCommandInvoke = (AbstractCommandInvoke) constructor.newInstance(new Object[]{new CommandWatcherInfoModel()});
+                CommandEnums.Watcher commandEnums = abstractCommandInvoke.commandName();
+                GroupContainerHelper.getInstance().registerWatcherCommandInvoke(commandEnums, clazz);
             } catch (Exception e) {
                 // 忽略
                 e.printStackTrace();

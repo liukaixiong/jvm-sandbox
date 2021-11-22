@@ -45,8 +45,11 @@ public class Constants {
      * 沙箱的暴露http接口路径
      */
     public final static String DEFAULT_SANDBOX_PATH = "/sandbox/default/module/http/";
+    public final static String MODULE_COMMAND_DEBUG_HTTP_ID = "command-debug-http";
+    public final static String MODULE_COMMAND_DEBUG_HTTP_INVOKE = "command-debug-http-invoke";
 
-    public final static String MODULE_COMMAND_HTTP_ID = "command-http";
+
+    public final static String MODULE_COMMAND_WATCHER_HTTP_ID = "command-watcher-http";
     public final static String MODULE_COMMAND_HTTP_LIST = "command-list";
     public final static String MODULE_COMMAND_HTTP_REGISTER = "command-register";
     public final static String MODULE_COMMAND_HTTP_STOP = "command-stop";

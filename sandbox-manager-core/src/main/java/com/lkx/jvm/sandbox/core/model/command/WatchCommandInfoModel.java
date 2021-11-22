@@ -5,7 +5,7 @@ package com.lkx.jvm.sandbox.core.model.command;
  * @Email liukx@elab-plus.com
  * @date 2021/11/11 - 15:53
  */
-public class WatchCommandInfoModel extends CommandInfoModel {
+public class WatchCommandInfoModel extends CommandWatcherInfoModel {
 
 
     private String at;

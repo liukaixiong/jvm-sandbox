@@ -6,7 +6,7 @@ import com.jvm.sandbox.web.manager.model.JsonResult;
 import com.jvm.sandbox.web.manager.service.HeartbeatService;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.model.command.CommandConfigRequest;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import com.lkx.jvm.sandbox.core.model.command.CommandLogResponse;
 import com.lkx.jvm.sandbox.core.util.CheckUtils;
 import com.lkx.jvm.sandbox.core.util.HttpUtil;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -47,12 +46,12 @@ public class CommandController {
 
     @PostMapping(value = LIST_URL,
             produces = "application/json;charset=UTF-8")
-    public JsonResult<List<CommandInfoModel>> list(@RequestBody CommandInfoModel infoModel) throws Exception {
+    public JsonResult<List<CommandWatcherInfoModel>> list(@RequestBody CommandWatcherInfoModel infoModel) throws Exception {
         CheckUtils.isRequireNotNull(infoModel.getAppId(), "appId");
 
         HeartbeatModel heartbeatModel = heartbeatService.getObject(infoModel.getAppId());
 
-        List<CommandInfoModel> commandInfoModelList = new ArrayList<>();
+        List<CommandWatcherInfoModel> commandInfoModelList = new ArrayList<>();
 
         if (heartbeatModel == null) {
             return JsonResult.builder().success(true).data(commandInfoModelList).build();
@@ -70,7 +69,7 @@ public class CommandController {
 
     @PostMapping(value = ADD_URL,
             produces = "application/json;charset=UTF-8")
-    public JsonResult add(@RequestBody CommandInfoModel request) throws Exception {
+    public JsonResult add(@RequestBody CommandWatcherInfoModel request) throws Exception {
         CheckUtils.isRequireNotNull(request.getAppId(), "appId");
         CheckUtils.isRequireNotNull(request.getClassNamePattern(), "classNamePattern");
         CheckUtils.isRequireNotNull(request.getCommand(), "command");
@@ -81,7 +80,7 @@ public class CommandController {
 
     @PostMapping(value = DEL_URL,
             produces = "application/json;charset=UTF-8")
-    public JsonResult del(@RequestBody CommandInfoModel request) throws Exception {
+    public JsonResult del(@RequestBody CommandWatcherInfoModel request) throws Exception {
         CheckUtils.isRequireNotNull(request.getAppId(), "appId");
         CheckUtils.isRequireNotNull(request.getId(), "id");
 
@@ -98,8 +97,8 @@ public class CommandController {
             produces = "application/json;charset=UTF-8")
     public JsonResult configCommand(@RequestBody CommandConfigRequest model) {
         // 这部分数据需要存储到数据库
-        List<CommandInfoModel> commandInfoModelList = new ArrayList<>();
-        CommandInfoModel commandInfoModel = new CommandInfoModel();
+        List<CommandWatcherInfoModel> commandInfoModelList = new ArrayList<>();
+        CommandWatcherInfoModel commandInfoModel = new CommandWatcherInfoModel();
         commandInfoModel.setClassNamePattern("java.lang.System");
         commandInfoModel.setMethodPattern("gc");
         commandInfoModel.setCommand("stack");
@@ -128,7 +127,7 @@ public class CommandController {
      * @param routerPath
      * @return
      */
-    private JsonResult invoke(CommandInfoModel infoModel, String routerPath) throws Exception {
+    private JsonResult invoke(CommandWatcherInfoModel infoModel, String routerPath) throws Exception {
         // 获取应用信息
         HeartbeatModel projectInfo = heartbeatService.getObject(infoModel.getAppId());
         if (projectInfo != null) {
@@ -147,7 +146,7 @@ public class CommandController {
      * @param infoModel 请求参数
      * @return
      */
-    private JsonResult invokeHttp(String url, CommandInfoModel infoModel) throws Exception {
+    private JsonResult invokeHttp(String url, CommandWatcherInfoModel infoModel) throws Exception {
 
         Map<String, String> requestMap = BeanUtils.describe(infoModel);
 
@@ -172,7 +171,7 @@ public class CommandController {
         String defaultSandboxPath = Constants.DEFAULT_SANDBOX_PATH;
 
 //        String url = "http://" + ip + ":" + port + defaultSandboxPath + "/" + Constants.MODULE_COMMAND_HTTP_ID + "/" + Constants.MODULE_COMMAND_HTTP_LIST;
-        String url = "http://127.0.0.1:" + port + defaultSandboxPath + Constants.MODULE_COMMAND_HTTP_ID + "/" + routePath;
+        String url = "http://127.0.0.1:" + port + defaultSandboxPath + Constants.MODULE_COMMAND_WATCHER_HTTP_ID + "/" + routePath;
         return url;
     }
 
@@ -180,7 +179,7 @@ public class CommandController {
         String json = "{\"appId\":\"unknown-c0a802c0\",\"classNamePattern\":\"2\",\"command\":\"1\",\"created\":1636947675160,\"id\":\"\",\"invokeNumber\":4,\"methodPattern\":\"3\",\"runTime\":7351539,\"taskType\":\"\",\"timeOut\":5}";
 
 
-        CommandInfoModel commandInfoModel = JSON.parseObject(json, CommandInfoModel.class);
+        CommandWatcherInfoModel commandInfoModel = JSON.parseObject(json, CommandWatcherInfoModel.class);
 
         Map<String, String> map = new LinkedHashMap<>();
         BeanUtils.populate(commandInfoModel, map);

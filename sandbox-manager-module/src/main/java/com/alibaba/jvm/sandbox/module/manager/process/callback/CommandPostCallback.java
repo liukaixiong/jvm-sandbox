@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.process.callback;
 
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 /**
  * @author liukaixiong
@@ -9,7 +9,7 @@ import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
  */
 public interface CommandPostCallback {
 
-    default void callback(CommandInfoModel commandInfoModel, Object req) {
+    default void callback(CommandWatcherInfoModel commandInfoModel, Object req) {
 
     }
 }

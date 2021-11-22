@@ -1,16 +1,15 @@
 package com.lkx.jvm.sandbox.core.model.command;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
- * 命令执行详情返回结果
+ * 命令观察对象
  *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2021/11/11 - 11:40
  */
-public class CommandInfoModel {
+public class CommandWatcherInfoModel extends CommandModel {
 
     /**
      * 命令编号
@@ -21,18 +20,12 @@ public class CommandInfoModel {
      * 应用唯一标识
      */
     String appId;
-    /**
-     * 执行的指令
-     */
-    private String command;
+
     /**
      * 任务类型
      */
     private String taskType;
 
-    private String classNamePattern;
-
-    private String methodPattern;
     /**
      * 执行次数
      */
@@ -51,25 +44,12 @@ public class CommandInfoModel {
      */
     private Long howManyCount;
 
-    /**
-     * 拓展参数
-     */
-    private Map<String, Object> extData;
-
     private Long runTime;
 
     /**
      * 创建时间
      */
     private Date created = new Date();
-
-    public Map<String, Object> getExtData() {
-        return extData;
-    }
-
-    public void setExtData(Map<String, Object> extData) {
-        this.extData = extData;
-    }
 
     public String getAppId() {
         return appId;
@@ -118,30 +98,6 @@ public class CommandInfoModel {
         } else {
             return this.runTime;
         }
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public String getClassNamePattern() {
-        return classNamePattern;
-    }
-
-    public void setClassNamePattern(String classNamePattern) {
-        this.classNamePattern = classNamePattern;
-    }
-
-    public String getMethodPattern() {
-        return methodPattern;
-    }
-
-    public void setMethodPattern(String methodPattern) {
-        this.methodPattern = methodPattern;
     }
 
     public Integer getInvokeNumber() {

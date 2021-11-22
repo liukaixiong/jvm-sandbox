@@ -45,8 +45,11 @@ public class SpringContextContainer {
     public Object getBean(String beanName) throws Exception {
         return getApplicationObject("getBean", beanName);
     }
+    public Object getBean(Class<?> beanClass) throws Exception {
+        return getApplicationObject("getBean", beanClass);
+    }
 
-    public Object getBean(Class<? extends Annotation> annotationClass) throws Exception {
+    public Object getBeansWithAnnotation(Class<? extends Annotation> annotationClass) throws Exception {
         return getApplicationObject("getBeansWithAnnotation",annotationClass);
     }
 

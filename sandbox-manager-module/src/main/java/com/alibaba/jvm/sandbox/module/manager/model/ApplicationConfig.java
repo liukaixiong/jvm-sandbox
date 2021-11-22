@@ -5,20 +5,19 @@ import java.net.UnknownHostException;
 
 import com.alibaba.jvm.sandbox.module.manager.util.IPUtils;
 import com.alibaba.jvm.sandbox.module.manager.util.PropertyUtil;
-import sun.net.util.IPAddressUtil;
 
 
 /**
- * {@link ApplicationModel} 描述一个基础应用模型
+ * {@link ApplicationConfig} 描述一个基础应用模型
  * <p>
- * 应用名    {@link ApplicationModel#appName}
- * 机器名    {@link ApplicationModel#host}
- * 环境信息  {@link ApplicationModel#environment}
+ * 应用名    {@link ApplicationConfig#appName}
+ * 机器名    {@link ApplicationConfig#host}
+ * 环境信息  {@link ApplicationConfig#environment}
  * </p>
  *
  * @author zhaoyb1990
  */
-public class ApplicationModel {
+public class ApplicationConfig {
 
     private String appId;
 
@@ -27,12 +26,14 @@ public class ApplicationModel {
     private String environment;
 
     private String host;
+    
+    private boolean isDisableSubClass = false; 
 
     private volatile boolean fusing = false;
 
-    private static ApplicationModel instance = new ApplicationModel();
+    private static ApplicationConfig instance = new ApplicationConfig();
 
-    private ApplicationModel() {
+    private ApplicationConfig() {
         // for example, you can define it your self
         this.appName = PropertyUtil.getSystemPropertyOrDefault("app.name", "unknown");
         this.environment = PropertyUtil.getSystemPropertyOrDefault("app.env", "unknown");
@@ -44,7 +45,7 @@ public class ApplicationModel {
         }
     }
 
-    public static ApplicationModel instance() {
+    public static ApplicationConfig instance() {
         return instance;
     }
 

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
  * @date 2021/11/2 - 16:58
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.sandbox.demo.controller"})
 public class DemoApplication {
 
     public static void main(String[] args) {

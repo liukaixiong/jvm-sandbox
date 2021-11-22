@@ -3,7 +3,7 @@ package com.alibaba.jvm.sandbox.module.manager.components;
 import com.alibaba.jvm.sandbox.api.listener.ext.EventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.lkx.jvm.sandbox.core.enums.CommandTaskTypeEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandInfoModel;
+import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,12 +36,12 @@ public class CommandApiTaskManager {
     /**
      * 任务详情
      */
-    private Map<String, CommandInfoModel> commandInfoCache = new ConcurrentHashMap<>();
+    private Map<String, CommandWatcherInfoModel> commandInfoCache = new ConcurrentHashMap<>();
 
     /**
      * 注册调度任务
      */
-    public void registerScheduleTask(ModuleEventWatcher watcher, CommandInfoModel commandInfoModel) {
+    public void registerScheduleTask(ModuleEventWatcher watcher, CommandWatcherInfoModel commandInfoModel) {
         commandInfoModel.setTaskType(CommandTaskTypeEnums.SCHEDULING_TASK.name());
         String taskId = getTaskId();
         commandInfoModel.setId(taskId);
@@ -74,20 +74,31 @@ public class CommandApiTaskManager {
      * @param moduleEventWatcher
      * @param commandInfoModel
      */
-    public void registerGlobalTask(ModuleEventWatcher moduleEventWatcher, CommandInfoModel commandInfoModel) throws Exception {
-        commandInfoModel.setAppId(ApplicationConfig.getInstance().getAppId());
-        commandInfoModel.setTaskType(CommandTaskTypeEnums.GLOBAL_TASK.name());
-        commandInfoModel.setInvokeNumber(Integer.MAX_VALUE);
-        commandInfoModel.setHowManyCount((long) Integer.MAX_VALUE);
-        commandInfoModel.setTimeOut(-1l);
-        String taskId = getTaskId();
-        commandInfoModel.setId(taskId);
+    public void registerGlobalTask(ModuleEventWatcher moduleEventWatcher, CommandWatcherInfoModel commandInfoModel) throws Exception {
+        String taskId = completionCommandInfo(commandInfoModel);
         CommandProcessManager eventWatcherProcess = new CommandProcessManager(moduleEventWatcher, commandInfoModel);
         EventWatcher watcher = eventWatcherProcess.invokeGlobalWatch();
-        commandInfoModel.setStatus(1);
         commandInfoCache.put(taskId, commandInfoModel);
         watcherCache.put(taskId, watcher);
         logger.info("注册了全局的任务组件:" + commandInfoModel.getCommand() + " -> " + commandInfoModel.getClassNamePattern() + "#" + commandInfoModel.getMethodPattern());
+    }
+
+    /**
+     * 补全纬度
+     *
+     * @param commandInfoModel
+     * @return
+     */
+    private String completionCommandInfo(CommandWatcherInfoModel commandInfoModel) {
+        commandInfoModel.setAppId(SpringApplicationConfig.getInstance().getAppId());
+        commandInfoModel.setTaskType(CommandTaskTypeEnums.GLOBAL_TASK.name());
+        commandInfoModel.setInvokeNumber(Integer.MAX_VALUE);
+        commandInfoModel.setHowManyCount((long) Integer.MAX_VALUE);
+        commandInfoModel.setTimeOut(-1L);
+        String taskId = getTaskId();
+        commandInfoModel.setId(taskId);
+        commandInfoModel.setStatus(1);
+        return taskId;
     }
 
     protected String getTaskId() {
@@ -99,8 +110,8 @@ public class CommandApiTaskManager {
      *
      * @return
      */
-    public List<CommandInfoModel> list() {
-        return commandInfoCache.values().stream().sorted(Comparator.comparingLong(CommandInfoModel::getRunTime).reversed()).collect(Collectors.toList());
+    public List<CommandWatcherInfoModel> list() {
+        return commandInfoCache.values().stream().sorted(Comparator.comparingLong(CommandWatcherInfoModel::getRunTime).reversed()).collect(Collectors.toList());
     }
 
     /**
@@ -121,7 +132,7 @@ public class CommandApiTaskManager {
             watcher.onUnWatched();
         }
 
-        CommandInfoModel commandInfoModel = commandInfoCache.get(taskId);
+        CommandWatcherInfoModel commandInfoModel = commandInfoCache.get(taskId);
         if (commandInfoModel != null) {
             commandInfoModel.setStatus(-1);
         }
