@@ -17,11 +17,6 @@ public class CommandWatcherInfoModel extends CommandModel {
     private String id;
 
     /**
-     * 应用唯一标识
-     */
-    String appId;
-
-    /**
      * 任务类型
      */
     private String taskType;
@@ -50,14 +45,6 @@ public class CommandWatcherInfoModel extends CommandModel {
      * 创建时间
      */
     private Date created = new Date();
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
 
     public void setRunTime(Long runTime) {
         this.runTime = runTime;

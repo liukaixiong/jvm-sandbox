@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.jvm.sandbox.web.manager.model.HeartbeatModel;
 import com.jvm.sandbox.web.manager.model.JsonResult;
 import com.jvm.sandbox.web.manager.service.HeartbeatService;
+import com.jvm.sandbox.web.manager.utils.ModuleHttpUtils;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.model.command.CommandConfigRequest;
 import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
@@ -29,7 +30,7 @@ import java.util.*;
  * @date 2021/10/26 - 11:40
  */
 @RestController
-public class CommandController {
+public class WatcherCommandController {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -49,18 +50,10 @@ public class CommandController {
     public JsonResult<List<CommandWatcherInfoModel>> list(@RequestBody CommandWatcherInfoModel infoModel) throws Exception {
         CheckUtils.isRequireNotNull(infoModel.getAppId(), "appId");
 
-        HeartbeatModel heartbeatModel = heartbeatService.getObject(infoModel.getAppId());
-
-        List<CommandWatcherInfoModel> commandInfoModelList = new ArrayList<>();
-
-        if (heartbeatModel == null) {
-            return JsonResult.builder().success(true).data(commandInfoModelList).build();
-        }
-
-        JsonResult invoke = invoke(infoModel, Constants.MODULE_COMMAND_HTTP_LIST);
+        JsonResult invoke = ModuleHttpUtils.invoke(heartbeatService, infoModel, Constants.MODULE_COMMAND_WATCHER_HTTP_ID, Constants.MODULE_COMMAND_HTTP_LIST);
 
         if (!invoke.isSuccess()) {
-            return JsonResult.builder().success(true).data(commandInfoModelList).build();
+            return JsonResult.builder().success(true).data(new ArrayList<>()).build();
         }
 
         return invoke;
@@ -74,8 +67,7 @@ public class CommandController {
         CheckUtils.isRequireNotNull(request.getClassNamePattern(), "classNamePattern");
         CheckUtils.isRequireNotNull(request.getCommand(), "command");
         CheckUtils.isRequireNotNull(request.getMethodPattern(), "methodPattern");
-
-        return invoke(request, Constants.MODULE_COMMAND_HTTP_REGISTER);
+        return ModuleHttpUtils.invoke(heartbeatService, request,Constants.MODULE_COMMAND_WATCHER_HTTP_ID, Constants.MODULE_COMMAND_HTTP_REGISTER);
     }
 
     @PostMapping(value = DEL_URL,
@@ -83,8 +75,7 @@ public class CommandController {
     public JsonResult del(@RequestBody CommandWatcherInfoModel request) throws Exception {
         CheckUtils.isRequireNotNull(request.getAppId(), "appId");
         CheckUtils.isRequireNotNull(request.getId(), "id");
-
-        return invoke(request, Constants.MODULE_COMMAND_HTTP_STOP);
+        return ModuleHttpUtils.invoke(heartbeatService, request, Constants.MODULE_COMMAND_WATCHER_HTTP_ID,Constants.MODULE_COMMAND_HTTP_STOP);
     }
 
     /**
@@ -120,70 +111,59 @@ public class CommandController {
         return JsonResult.builder().success(true).build();
     }
 
-    /**
-     * 执行远程处理
-     *
-     * @param infoModel
-     * @param routerPath
-     * @return
-     */
-    private JsonResult invoke(CommandWatcherInfoModel infoModel, String routerPath) throws Exception {
-        // 获取应用信息
-        HeartbeatModel projectInfo = heartbeatService.getObject(infoModel.getAppId());
-        if (projectInfo != null) {
-            // 构建远程请求
-            String requestUrl = getRequestUrl(projectInfo, routerPath);
-            // 执行远程调用
-            return invokeHttp(requestUrl, infoModel);
-        }
-        return JsonResult.builder().success(false).message("操作失败").build();
-    }
+//    /**
+//     * 执行远程处理
+//     *
+//     * @param infoModel
+//     * @param routerPath
+//     * @return
+//     */
+//    private JsonResult invoke(CommandWatcherInfoModel infoModel, String routerPath) throws Exception {
+//        // 获取应用信息
+//        HeartbeatModel projectInfo = heartbeatService.getObject(infoModel.getAppId());
+//        if (projectInfo != null) {
+//            // 构建远程请求
+//            String requestUrl = getRequestUrl(projectInfo, routerPath);
+//            // 执行远程调用
+//            return invokeHttp(requestUrl, infoModel);
+//        }
+//        return JsonResult.builder().success(false).message("操作失败").build();
+//    }
+//
+//    /**
+//     * 执行远程调用
+//     *
+//     * @param url       请求路径
+//     * @param infoModel 请求参数
+//     * @return
+//     */
+//    private JsonResult invokeHttp(String url, CommandWatcherInfoModel infoModel) throws Exception {
+//
+//        Map<String, String> requestMap = BeanUtils.describe(infoModel);
+//
+//        HttpUtil.Resp resp = HttpUtil.doPost(url, requestMap);
+//
+//        if (resp.isSuccess()) {
+//            return JsonUtils.parseObject(resp.getBody(), JsonResult.class);
+//        }
+//        return JsonResult.builder().success(false).message(resp.getMessage()).build();
+//    }
+//
+//    /**
+//     * 获取执行远程调用
+//     *
+//     * @param heartbeatModel
+//     * @param routePath
+//     * @return
+//     */
+//    private String getRequestUrl(HeartbeatModel heartbeatModel, String routePath) {
+//        String ip = heartbeatModel.getIp();
+//        String port = heartbeatModel.getPort();
+//        String defaultSandboxPath = Constants.DEFAULT_SANDBOX_PATH;
+//
+////        String url = "http://" + ip + ":" + port + defaultSandboxPath + "/" + Constants.MODULE_COMMAND_HTTP_ID + "/" + Constants.MODULE_COMMAND_HTTP_LIST;
+//        String url = "http://127.0.0.1:" + port + defaultSandboxPath + Constants.MODULE_COMMAND_WATCHER_HTTP_ID + "/" + routePath;
+//        return url;
+//    }
 
-    /**
-     * 执行远程调用
-     *
-     * @param url       请求路径
-     * @param infoModel 请求参数
-     * @return
-     */
-    private JsonResult invokeHttp(String url, CommandWatcherInfoModel infoModel) throws Exception {
-
-        Map<String, String> requestMap = BeanUtils.describe(infoModel);
-
-        HttpUtil.Resp resp = HttpUtil.doPost(url, requestMap);
-
-        if (resp.isSuccess()) {
-            return JsonUtils.parseObject(resp.getBody(), JsonResult.class);
-        }
-        return JsonResult.builder().success(false).message(resp.getMessage()).build();
-    }
-
-    /**
-     * 获取执行远程调用
-     *
-     * @param heartbeatModel
-     * @param routePath
-     * @return
-     */
-    private String getRequestUrl(HeartbeatModel heartbeatModel, String routePath) {
-        String ip = heartbeatModel.getIp();
-        String port = heartbeatModel.getPort();
-        String defaultSandboxPath = Constants.DEFAULT_SANDBOX_PATH;
-
-//        String url = "http://" + ip + ":" + port + defaultSandboxPath + "/" + Constants.MODULE_COMMAND_HTTP_ID + "/" + Constants.MODULE_COMMAND_HTTP_LIST;
-        String url = "http://127.0.0.1:" + port + defaultSandboxPath + Constants.MODULE_COMMAND_WATCHER_HTTP_ID + "/" + routePath;
-        return url;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String json = "{\"appId\":\"unknown-c0a802c0\",\"classNamePattern\":\"2\",\"command\":\"1\",\"created\":1636947675160,\"id\":\"\",\"invokeNumber\":4,\"methodPattern\":\"3\",\"runTime\":7351539,\"taskType\":\"\",\"timeOut\":5}";
-
-
-        CommandWatcherInfoModel commandInfoModel = JSON.parseObject(json, CommandWatcherInfoModel.class);
-
-        Map<String, String> map = new LinkedHashMap<>();
-        BeanUtils.populate(commandInfoModel, map);
-        System.out.println(map);
-
-    }
 }

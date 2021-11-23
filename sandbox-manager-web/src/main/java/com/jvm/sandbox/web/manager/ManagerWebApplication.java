@@ -1,5 +1,6 @@
 package com.jvm.sandbox.web.manager;
 
+import com.lkx.jvm.sandbox.core.enums.CommandEnums;
 import com.ruoyi.client.annotation.EnableAVue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +11,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2021/11/8 - 17:24
  */
 @SpringBootApplication
-@EnableAVue(basePackages = "com.jvm.sandbox.web.manager.avue")
+@EnableAVue(basePackages = "com.jvm.sandbox.web.manager.avue", enumsPackagesClasses = {CommandEnums.Debug.class, CommandEnums.Watcher.class})
 public class ManagerWebApplication {
 
     public static void main(String[] args) {

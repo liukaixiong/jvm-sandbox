@@ -10,6 +10,11 @@ import java.util.Map;
  * @date 2021/11/22 - 11:08
  */
 public class CommandModel {
+
+    /**
+     * 应用唯一标识
+     */
+    private String appId;
     /**
      * 执行的指令
      */
@@ -23,6 +28,14 @@ public class CommandModel {
      * 拓展参数
      */
     private Map<String, Object> extData;
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
 
     public String getCommand() {
         return command;

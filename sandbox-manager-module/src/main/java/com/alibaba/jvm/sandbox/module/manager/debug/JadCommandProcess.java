@@ -26,31 +26,26 @@ import java.util.NavigableMap;
  * @date 2021/11/22 - 11:30
  */
 public class JadCommandProcess implements CommandDebugProcess<String> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public CommandEnums.Debug command() {
         return CommandEnums.Debug.jad;
     }
 
     @Override
-    public String invoke(Instrumentation inst, CommandDebugModel req) {
+    public String invoke(Instrumentation inst, CommandDebugModel req) throws Exception {
         boolean lineNumber = true;
         boolean hideUnicode = false;
         String methodName = null;
         String classNamePattern = req.getClassNamePattern();
         HashSet<Class<?>> allClasses = Sets.newHashSet();
-        try {
-            Class<?> clazz = Class.forName(classNamePattern);
-            allClasses.add(clazz);
-            ClassDumpTransformer transformer = new ClassDumpTransformer(allClasses);
-            InstrumentationUtils.retransformClasses(inst, transformer, allClasses);
-            Map<Class<?>, File> dumpResult = transformer.getDumpResult();
-            File classFile = dumpResult.get(clazz);
-            Pair<String, NavigableMap<Integer, Integer>> decompileResult = DecompilerUtils.decompileWithMappings(classFile.getAbsolutePath(), methodName, hideUnicode, lineNumber);
-            return decompileResult.getFirst();
-        } catch (ClassNotFoundException e) {
-            logger.error("",e);
-        }
-        return null;
+        Class<?> clazz = Class.forName(classNamePattern);
+        allClasses.add(clazz);
+        ClassDumpTransformer transformer = new ClassDumpTransformer(allClasses);
+        InstrumentationUtils.retransformClasses(inst, transformer, allClasses);
+        Map<Class<?>, File> dumpResult = transformer.getDumpResult();
+        File classFile = dumpResult.get(clazz);
+        Pair<String, NavigableMap<Integer, Integer>> decompileResult = DecompilerUtils.decompileWithMappings(classFile.getAbsolutePath(), methodName, hideUnicode, lineNumber);
+        return decompileResult.getFirst();
     }
 }

@@ -17,7 +17,6 @@ import java.lang.instrument.Instrumentation;
  * @date 2021/11/22 - 16:17
  */
 public class SpringCommandProcess implements CommandDebugProcess<Object> {
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public CommandEnums.Debug command() {
@@ -25,20 +24,15 @@ public class SpringCommandProcess implements CommandDebugProcess<Object> {
     }
 
     @Override
-    public Object invoke(Instrumentation inst, CommandDebugModel req) {
+    public Object invoke(Instrumentation inst, CommandDebugModel req) throws Exception {
         String classNamePattern = req.getClassNamePattern();
-        try {
-            Object bean = null;
-            if (classNamePattern.contains(".")) {
-                Class<?> clazz = Class.forName(classNamePattern);
-                bean = SpringContextContainer.getInstance().getBean(clazz);
-            } else {
-                bean = SpringContextContainer.getInstance().getBean(classNamePattern);
-            }
-            return DebugMethodUtils.getInvokeResult(req.getMethodPattern(), bean);
-        } catch (Exception e) {
-            logger.error("getBean error", e);
-            return e.getMessage();
+        Object bean = null;
+        if (classNamePattern.contains(".")) {
+            Class<?> clazz = Class.forName(classNamePattern);
+            bean = SpringContextContainer.getInstance().getBean(clazz);
+        } else {
+            bean = SpringContextContainer.getInstance().getBean(classNamePattern);
         }
+        return DebugMethodUtils.getInvokeResult(req.getMethodPattern(), bean);
     }
 }

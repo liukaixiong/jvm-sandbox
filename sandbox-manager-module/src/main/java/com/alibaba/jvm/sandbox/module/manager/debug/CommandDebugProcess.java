@@ -15,6 +15,8 @@ import java.lang.instrument.Instrumentation;
  * @date 2021/11/22 - 11:14
  */
 public interface CommandDebugProcess<T> {
+    Logger logger = LoggerFactory.getLogger(CommandDebugProcess.class);
+
     /**
      * 命令信息
      *
@@ -28,6 +30,7 @@ public interface CommandDebugProcess<T> {
      * @param req
      * @return
      */
-    public T invoke(Instrumentation inst,CommandDebugModel req);
+    public T invoke(Instrumentation inst, CommandDebugModel req) throws Exception;
+
 
 }

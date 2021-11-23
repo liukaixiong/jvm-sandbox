@@ -1,22 +1,22 @@
 package com.jvm.sandbox.web.manager.avue.template;
 
+import com.jvm.sandbox.web.manager.avue.AVueConstants;
 import com.jvm.sandbox.web.manager.avue.template.node.ModuleInfoTemplate;
+import com.jvm.sandbox.web.manager.controller.DebugCommandController;
 import com.jvm.sandbox.web.manager.controller.HeartbeatController;
 import com.ruoyi.client.annotation.*;
 import com.ruoyi.client.annotation.column.AVueDatetime;
-import com.ruoyi.client.annotation.column.AVueDynamic;
 import com.ruoyi.client.annotation.column.AVueInput;
 import com.ruoyi.client.annotation.column.AVueTable;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2021/11/8 - 16:56
  */
-@AVueRouteKey(groupKey = "sandbox-heartbeat-platform")
+@AVueRouteKey(groupKey = AVueConstants.HEARTBEAT_PLATFORM)
 @AVueTableOption(title = "沙箱在线应用管理", dialogDrag = true, editBtn = false, delBtn = false, viewBtn = true, viewBtnText = "查看详情")
 @AVueConfig(list = HeartbeatController.HEARTBEAT_LIST_URL, successField = "success", successKeyword = "true", messageField = "message")
 @AVueEventButtons(
@@ -26,6 +26,12 @@ import java.util.List;
                 @AVueClickButton(methodName = "openTabLink", btnName = "查看增强列表", attrExt = {
                         @AVueAttr(name = "group", value = "sandbox-command"),
                         @AVueAttr(name = "query", value = "appId=#{appId}"),
+                }),
+                // 指定方法名称，还有按钮名称
+                @AVueClickButton(methodName = "openWindowJsonRemote", btnName = "调试应用", attrExt = {
+                        @AVueAttr(name = "submitUrl", value = DebugCommandController.DEBUG_URL),
+                        @AVueAttr(name = "group", value = AVueConstants.DEBUG_COMMAND_NAME),
+                        @AVueAttr(name = "submitEventName", value = "alertSubmit"),
                 })
         }
 )

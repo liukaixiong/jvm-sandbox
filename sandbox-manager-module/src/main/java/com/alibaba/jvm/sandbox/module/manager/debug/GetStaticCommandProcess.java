@@ -32,26 +32,18 @@ import java.util.List;
  */
 public class GetStaticCommandProcess implements CommandDebugProcess<Object> {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-
     @Override
     public CommandEnums.Debug command() {
         return CommandEnums.Debug.getStatic;
     }
 
     @Override
-    public Object invoke(Instrumentation inst, CommandDebugModel req) {
+    public Object invoke(Instrumentation inst, CommandDebugModel req) throws Exception {
         CheckUtils.isRequireNotNull(req.getMethodPattern(), "methodPattern");
         CheckUtils.isRequireNotNull(req.getClassNamePattern(), "classNamePattern");
 
-        try {
-            Class<?> clazz = Class.forName(req.getClassNamePattern());
-            return DebugMethodUtils.getInvokeResult(req.getMethodPattern(), clazz);
-        } catch (Exception e) {
-            logger.error("getstatic error", e);
-            return e.getMessage();
-        }
+        Class<?> clazz = Class.forName(req.getClassNamePattern());
+        return DebugMethodUtils.getInvokeResult(req.getMethodPattern(), clazz);
     }
 
 
