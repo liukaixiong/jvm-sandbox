@@ -165,6 +165,8 @@
         <module>sandbox-manager-module</module>
         <module>sandbox-manager-web</module>
         <module>sandbox-manager-core</module>
+        <module>sandbox-application-plugins</module>
+        <module>sandbox-manager-api</module>
     </modules>
 
     <dependencyManagement>
