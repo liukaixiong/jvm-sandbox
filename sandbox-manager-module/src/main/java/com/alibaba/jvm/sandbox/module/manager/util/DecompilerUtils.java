@@ -1,4 +1,4 @@
-package com.lkx.jvm.sandbox.core.util;
+package com.alibaba.jvm.sandbox.module.manager.util;
 
 import com.lkx.jvm.sandbox.core.model.common.Pair;
 import org.apache.commons.lang3.StringUtils;

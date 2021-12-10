@@ -91,7 +91,10 @@ public class AgentLauncher {
      */
     public static void premain(String featureString, Instrumentation inst) {
         LAUNCH_MODE = LAUNCH_MODE_AGENT;
+        long start = System.currentTimeMillis();
         install(toFeatureMap(featureString), inst);
+        long time = System.currentTimeMillis() - start;
+        System.out.println("===================>>>>>>>>>>>>>>>>agent耗时>>>>>" + time);
     }
 
     /**
@@ -355,12 +358,12 @@ public class AgentLauncher {
 
     // 获取主目录
     private static String getSandboxHome(final Map<String, String> featureMap) {
-        String home =  getDefault(featureMap, KEY_SANDBOX_HOME, DEFAULT_SANDBOX_HOME);
-        if( isWindows() ){
+        String home = getDefault(featureMap, KEY_SANDBOX_HOME, DEFAULT_SANDBOX_HOME);
+        if (isWindows()) {
             Matcher m = Pattern.compile("(?i)^[/\\\\]([a-z])[/\\\\]").matcher(home);
-            if( m.find() ){
+            if (m.find()) {
                 home = m.replaceFirst("$1:/");
-            }            
+            }
         }
         return home;
     }

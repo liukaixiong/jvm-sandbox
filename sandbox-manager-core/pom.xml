@@ -13,6 +13,11 @@
     <artifactId>sandbox-manager-core</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba.jvm.sandbox</groupId>
+            <artifactId>sandbox-manager-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- 给DEBUG模块单独配置一个日志 -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -24,16 +29,15 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.1</version>
         </dependency>
-        <!-- 字节码反编译 -->
-        <dependency>
-            <groupId>org.benf</groupId>
-            <artifactId>cfr</artifactId>
-            <version>0.151</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>
