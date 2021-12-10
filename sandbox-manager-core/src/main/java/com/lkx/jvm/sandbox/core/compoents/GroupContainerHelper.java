@@ -1,9 +1,5 @@
-package com.alibaba.jvm.sandbox.module.manager.components;
+package com.lkx.jvm.sandbox.core.compoents;
 
-import com.lkx.jvm.sandbox.core.enums.CommandEnums;
-import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
-
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +29,7 @@ public class GroupContainerHelper {
      * @param object
      * @param <T>
      */
-    public <T> void registerList(Class<T> interfaces, T object) {
+    public <T> void registerList(Class<?> interfaces, T object) {
         List<T> list = (List<T>) groupMap.computeIfAbsent(interfaces.getSimpleName(), k -> new ArrayList<T>());
         list.add(object);
     }
@@ -42,29 +38,33 @@ public class GroupContainerHelper {
         return (T) groupMap.get(clazz.getSimpleName() + "-" + key);
     }
 
+    public <T> T getObject(Class<T> clazz) {
+        return (T) groupMap.get(clazz.getSimpleName());
+    }
+
     public <T> void registerObject(String key, T object, Class<T> clazz) {
         groupMap.put(clazz.getSimpleName() + "-" + key, object);
+    }
+
+    public <T> void registerObject(Class<?> clazz, Object object) {
+        groupMap.put(clazz.getSimpleName(), object);
+    }
+
+    public <T> void registerObject(Object object) {
+        groupMap.put(object.getClass().getSimpleName(), object);
     }
 
     /**
      * 获取一组接口的实现集合
      *
      * @param interfaces
-     * @param <T>
      * @return
      */
     public <T> List<T> getList(Class<T> interfaces) {
         return (List<T>) groupMap.get(interfaces.getSimpleName());
     }
 
-    public AbstractCommandInvoke getCommandInvoke(String commandEnums, CommandWatcherInfoModel commandInfoModel) throws Exception {
-        Class clazz = (Class) groupMap.get(AbstractCommandInvoke.class.getSimpleName() + "-" + commandEnums);
-        Constructor constructor = clazz.getDeclaredConstructor(CommandWatcherInfoModel.class);
-        return (AbstractCommandInvoke) constructor.newInstance(new Object[]{commandInfoModel});
+    protected Map<String, Object> getGroupMap() {
+        return groupMap;
     }
-
-    public void registerWatcherCommandInvoke(CommandEnums.Watcher commandEnums, Class clazz) {
-        groupMap.put(AbstractCommandInvoke.class.getSimpleName() + "-" + commandEnums.name(), clazz);
-    }
-
 }

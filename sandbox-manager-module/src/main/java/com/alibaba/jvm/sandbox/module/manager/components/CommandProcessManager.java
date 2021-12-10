@@ -40,7 +40,7 @@ public class CommandProcessManager {
      */
     public EventWatcher invokeGlobalWatch() throws Exception {
         String command = commandInfoModel.getCommand();
-        AbstractCommandInvoke commandInvoke = GroupContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
+        AbstractCommandInvoke commandInvoke = CommandContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
         EventWatcher eventWatcher = commandInvoke.getEventWatcher(this.watcher);
         if (eventWatcher == null) {
             eventWatcher = new EventWatchBuilder(this.watcher)
@@ -74,7 +74,7 @@ public class CommandProcessManager {
             }
         });
 
-        AbstractCommandInvoke commandInvoke = GroupContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
+        AbstractCommandInvoke commandInvoke = CommandContainerHelper.getInstance().getCommandInvoke(command, commandInfoModel);
         commandInvoke.setCommandPostProcess(listCommandPostCallback);
 
         Long timeOut = ObjectUtils.defaultIfNull(commandInfoModel.getTimeOut(), -1L);
@@ -94,6 +94,8 @@ public class CommandProcessManager {
             }
             logger.info("该监听执行完毕");
         } finally {
+            logger.debug("任务停止被回调:" + getClass());
+            commandInvoke.stop();
             watcher.onUnWatched();
         }
     }
