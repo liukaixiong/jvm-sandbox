@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class FileUtils extends org.apache.commons.io.FileUtils {
+public class FileUtils {
 
     /**
      * Writes a byte array to a file creating the file if it does not exist.

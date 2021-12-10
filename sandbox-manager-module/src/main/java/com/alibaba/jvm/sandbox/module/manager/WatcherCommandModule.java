@@ -27,7 +27,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 在线观察命令模块
@@ -48,10 +47,6 @@ public class WatcherCommandModule extends ParamSupported implements Module, Load
 
     @Override
     public void loadCompleted() {
-        CompletableFuture.runAsync(this::loadRemoteConfig);
-    }
-
-    private void loadRemoteConfig() {
         CommandConfigRequest request = new CommandConfigRequest();
         request.setApplicationName(SpringApplicationConfig.getInstance().getApplicationName());
         request.setEnv(SpringApplicationConfig.getInstance().getEnvironment().toString());

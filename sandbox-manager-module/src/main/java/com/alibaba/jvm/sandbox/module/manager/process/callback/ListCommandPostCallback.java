@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.process.callback;
 
-import com.lkx.jvm.sandbox.core.compoents.GroupContainerHelper;
+import com.alibaba.jvm.sandbox.module.manager.components.GroupContainerHelper;
 import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 import java.util.List;

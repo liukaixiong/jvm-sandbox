@@ -21,7 +21,7 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected CommandWatcherInfoModel commandObject;
+    private CommandWatcherInfoModel commandObject;
 
     private CommandPostCallback commandPostProcess;
 
@@ -35,7 +35,7 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
     /**
      * 每个执行对象都对应着一个命令编号
      *
-     * @param commandObject 命令请求对象
+     * @param commandObject
      */
     public AbstractCommandInvoke(CommandWatcherInfoModel commandObject) {
         Assert.notNull(commandObject, "commandObject is not null!");
@@ -66,9 +66,5 @@ public abstract class AbstractCommandInvoke extends AdviceListener {
 
     public CommandWatcherInfoModel getCommandObject() {
         return commandObject;
-    }
-
-    protected void stop() {
-
     }
 }

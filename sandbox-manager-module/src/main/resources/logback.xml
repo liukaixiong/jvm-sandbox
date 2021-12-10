@@ -4,9 +4,9 @@
     <!-- MANAGER模块默认日志 -->
     <root level="INFO">
         <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${user.home}/logs/sandbox/debug/manager-module.log</file>
+            <file>${user.home}/logs/sandbox/debug/manager.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <FileNamePattern>${user.home}/logs/sandbox/debug/manager-module.log.%d{yyyy-MM-dd}</FileNamePattern>
+                <FileNamePattern>${user.home}/logs/sandbox/debug/manager.log.%d{yyyy-MM-dd}</FileNamePattern>
                 <MaxHistory>30</MaxHistory>
             </rollingPolicy>
             <encoder>
@@ -16,6 +16,4 @@
         </appender>
     </root>
 
-    <logger name="com.alibaba.jvm.sandbox.module.manager" level="DEBUG" />
-    <logger name="com.lkx.jvm.sandbox.core" level="DEBUG" />
 </configuration>

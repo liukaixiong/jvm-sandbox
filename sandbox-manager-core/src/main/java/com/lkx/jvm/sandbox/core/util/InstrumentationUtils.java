@@ -1,5 +1,6 @@
-package com.alibaba.jvm.sandbox.module.manager.util;
+package com.lkx.jvm.sandbox.core.util;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

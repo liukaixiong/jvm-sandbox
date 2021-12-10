@@ -58,6 +58,7 @@ public class CommandApiTaskManager {
                 // 执行完毕之后
                 commandInfoModel.setStatus(-1);
             }
+
         }, "command-api-" + commandInfoModel.getCommand());
 
         thread.start();

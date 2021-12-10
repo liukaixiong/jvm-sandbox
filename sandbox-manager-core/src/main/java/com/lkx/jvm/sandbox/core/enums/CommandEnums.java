@@ -12,8 +12,6 @@ public enum CommandEnums {
         trace("查询方法的执行链路信息"),
         time("查询方法的耗费时长"),
         log("通过日志装饰方法"),
-        monitor("一段时间内的方法执行监控"),
-        method_trace_result("记录方法执行结果"),
         stack("查找被调用方法上层方法栈");
 
         private String describe;
