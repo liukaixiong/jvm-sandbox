@@ -11,7 +11,7 @@ import com.alibaba.jvm.sandbox.api.listener.ext.EventWatchBuilder;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.module.manager.components.SpringContextContainer;
 import com.lkx.jvm.sandbox.core.Constants;
-import com.lkx.jvm.sandbox.core.compoents.GroupContainerHelper;
+import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
 import com.sandbox.manager.api.SpringLoadCompleted;
 import org.apache.commons.collections4.CollectionUtils;
 import org.kohsuke.MetaInfServices;
@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
@@ -67,7 +66,7 @@ public class SpringBeanModule implements Module, LoadCompleted {
     }
 
     private void springLoadCompletedCallback(Consumer<SpringLoadCompleted> consumer) {
-        List<SpringLoadCompleted> springLoadCompletedList = GroupContainerHelper.getInstance().getList(SpringLoadCompleted.class);
+        List<SpringLoadCompleted> springLoadCompletedList = GlobalFactoryHelper.getInstance().getList(SpringLoadCompleted.class);
         if (!CollectionUtils.isEmpty(springLoadCompletedList)) {
             for (SpringLoadCompleted springLoadCompleted : springLoadCompletedList) {
                 consumer.accept(springLoadCompleted);

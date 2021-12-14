@@ -1,8 +1,7 @@
-package com.lkx.jvm.sandbox.core.model.enhance;
+package com.sandbox.manager.api.model.enhance;
 
 import com.alibaba.jvm.sandbox.api.event.Event;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.ArrayUtils;
 
 import java.beans.ConstructorProperties;
 import java.util.Arrays;
@@ -140,7 +139,7 @@ public class EnhanceClassInfo {
         }
 
         public static MethodPattern[] transform(String... methodNames) {
-            if (ArrayUtils.isEmpty(methodNames)) {
+            if (methodNames == null || methodNames.length == 0) {
                 return null;
             }
             List<MethodPattern> methodPatterns = Lists.newArrayList();

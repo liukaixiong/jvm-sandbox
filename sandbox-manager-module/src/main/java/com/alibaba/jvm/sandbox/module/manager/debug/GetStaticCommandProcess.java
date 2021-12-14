@@ -1,19 +1,11 @@
 package com.alibaba.jvm.sandbox.module.manager.debug;
 
 import com.alibaba.jvm.sandbox.module.manager.util.DebugMethodUtils;
-import com.google.common.base.Splitter;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
 import com.lkx.jvm.sandbox.core.model.command.CommandDebugModel;
 import com.lkx.jvm.sandbox.core.util.CheckUtils;
-import org.apache.commons.beanutils.MethodUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.instrument.Instrumentation;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 获取特定类的静态属性

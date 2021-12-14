@@ -1,7 +1,5 @@
 package com.lkx.jvm.sandbox.core.factory;
 
-import com.alibaba.jvm.sandbox.api.resource.ConfigInfo;
-
 import java.util.List;
 
 /**

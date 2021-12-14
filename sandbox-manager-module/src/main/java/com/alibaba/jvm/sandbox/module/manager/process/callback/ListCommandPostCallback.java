@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.process.callback;
 
-import com.lkx.jvm.sandbox.core.compoents.GroupContainerHelper;
+import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
 import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class ListCommandPostCallback implements CommandPostCallback {
 
     @Override
     public void callback(CommandWatcherInfoModel commandInfoModel, Object req) {
-        List<CommandPostCallback> callbacks = GroupContainerHelper.getInstance().getList(CommandPostCallback.class);
+        List<CommandPostCallback> callbacks = GlobalFactoryHelper.getInstance().getList(CommandPostCallback.class);
         for (int i = 0; i < callbacks.size(); i++) {
             callbacks.get(i).callback(commandInfoModel, req);
         }

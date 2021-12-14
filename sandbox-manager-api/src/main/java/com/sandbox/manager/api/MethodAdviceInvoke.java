@@ -1,22 +1,15 @@
-package com.lkx.jvm.sandbox.core.listener;
+package com.sandbox.manager.api;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
-import com.sandbox.manager.api.Components;
 
 /**
- * 尽可能不动源码结构，保持一致
+ * 方法级别的处理器，负责处理每一个独立被监听的方法
  *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
- * @date 2021/12/8 - 16:00
+ * @date 2021/12/10 - 11:39
  */
-public interface AdviceListenerInvoke extends Components {
-    /**
-     * 识别这个监听类型
-     *
-     * @return
-     */
-    public String identify();
+public interface MethodAdviceInvoke extends Components, AdviceDefinition {
 
     /**
      * 方法调用前通知
@@ -25,7 +18,7 @@ public interface AdviceListenerInvoke extends Components {
      * <li>通知处理失败不会影响当前业务处理结果</li>
      * <li>
      * 在通知处理过程中依然可以使用{@link Advice#changeParameter(int, Object)}来改变入参，
-     * 也可以继续使用{@link ProcessController}来改变代码执行流程
+     * 也可以继续使用{@link com.alibaba.jvm.sandbox.api.ProcessController}来改变代码执行流程
      * </li>
      * </ul>
      *

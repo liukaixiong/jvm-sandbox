@@ -2,28 +2,25 @@ package com.sandbox.application.plugin.cat.listener;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.lkx.jvm.sandbox.core.compoents.PrintFormat;
-import com.lkx.jvm.sandbox.core.listener.AdviceListenerInvoke;
-import com.sandbox.manager.api.Components;
-import org.kohsuke.MetaInfServices;
+import com.sandbox.manager.api.AdviceNameDefinition;
+import com.sandbox.manager.api.MethodAdviceInvoke;
 
 /**
+ * 动态日志的植入
+ *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2021/12/8 - 17:25
  */
-@MetaInfServices(Components.class)
-public class LogAdviceListener implements AdviceListenerInvoke {
-
-    public static final String NAME = "LOG";
+public class LogAdviceListener implements MethodAdviceInvoke {
 
     @Override
-    public String identify() {
-        return LogAdviceListener.NAME;
+    public AdviceNameDefinition featureName() {
+        return AdviceNameDefinition.PRINT_LOG;
     }
 
     @Override
     public void before(Advice advice) throws Throwable {
-
         if (!advice.isProcessTop()) {
             return;
         }

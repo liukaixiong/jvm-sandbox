@@ -1,5 +1,7 @@
 package com.lkx.jvm.sandbox.core.compoents;
 
+import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
+
 /**
  * 默认注入工厂
  *
@@ -11,37 +13,37 @@ public class DefaultInjectResource implements InjectResource {
 
     @Override
     public Object getFieldValue(Class<?> resourceField) {
-        return GroupContainerHelper.getInstance().getObject(resourceField);
+        return GlobalFactoryHelper.getInstance().getObject(resourceField);
     }
 
     @Override
     public void afterProcess(Object obj) {
-        Class<?> clazz = obj.getClass();
-
-        builderObjectCache(clazz, obj);
-
-        GroupContainerHelper.getInstance().registerObject(obj);
+//        Class<?> clazz = obj.getClass();
+//
+//        builderObjectCache(clazz, obj);
+//
+//        instanceFactory.registerObject(obj);
     }
 
 
-    public void builderObjectCache(Class<?> clazz, Object obj) {
-
-        if (clazz == Object.class) {
-            return;
-        }
-
-        GroupContainerHelper.getInstance().registerList(clazz, obj);
-
-        Class<?>[] interfaces = clazz.getInterfaces();
-        // 将接口类进行分组
-        if (interfaces.length > 0) {
-            for (int i = 0; i < interfaces.length; i++) {
-                Class<?> anInterface = interfaces[i];
-                GroupContainerHelper.getInstance().registerList(anInterface, obj);
-            }
-        }
-
-        builderObjectCache(clazz.getSuperclass(), obj);
-    }
+//    public void builderObjectCache(Class<?> clazz, Object obj) {
+//
+//        if (clazz == Object.class) {
+//            return;
+//        }
+//
+//        instanceFactory.registerList(clazz, obj);
+//
+//        Class<?>[] interfaces = clazz.getInterfaces();
+//        // 将接口类进行分组
+//        if (interfaces.length > 0) {
+//            for (int i = 0; i < interfaces.length; i++) {
+//                Class<?> anInterface = interfaces[i];
+//                instanceFactory.registerList(anInterface, obj);
+//            }
+//        }
+//
+//        builderObjectCache(clazz.getSuperclass(), obj);
+//    }
 
 }

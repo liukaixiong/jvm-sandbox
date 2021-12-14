@@ -4,7 +4,7 @@ import com.alibaba.jvm.sandbox.api.Information;
 import com.alibaba.jvm.sandbox.api.LoadCompleted;
 import com.alibaba.jvm.sandbox.api.Module;
 import com.alibaba.jvm.sandbox.api.annotation.Command;
-import com.lkx.jvm.sandbox.core.compoents.GroupContainerHelper;
+import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
 import com.alibaba.jvm.sandbox.module.manager.debug.CommandDebugProcess;
 import com.alibaba.jvm.sandbox.module.manager.util.ResponseUtils;
 import com.lkx.jvm.sandbox.core.Constants;
@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.instrument.Instrumentation;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,9 +46,14 @@ public class DebugCommandModule implements Module, LoadCompleted {
         logger.info("接收到参数: " + param);
         try {
             CommandDebugModel debugModel = builderCommandDebugInfo(param);
-            CommandDebugProcess<?> debugProcess = GroupContainerHelper.getInstance().getObject(debugModel.getCommand(), CommandDebugProcess.class);
-            Object invoke = debugProcess.invoke(instrumentation, debugModel);
-            ResponseUtils.writeJson(response, JsonResult.builder().success(true).data(invoke).build());
+            List<CommandDebugProcess> commandDebugProcessList = GlobalFactoryHelper.getInstance().getList(CommandDebugProcess.class);
+            for (CommandDebugProcess debugProcess : commandDebugProcessList) {
+                if (debugProcess.command().name().equals(debugModel.getCommand())) {
+                    Object invoke = debugProcess.invoke(instrumentation, debugModel);
+                    ResponseUtils.writeJson(response, JsonResult.builder().success(true).data(invoke).build());
+                    break;
+                }
+            }
         } catch (Exception e) {
             ResponseUtils.writeJson(response, JsonResult.builder().success(false).message(e.toString()).build());
         }
@@ -59,7 +65,7 @@ public class DebugCommandModule implements Module, LoadCompleted {
         String classNamePattern = param.get("classNamePattern");
         String methodPattern = param.get("methodPattern");
 
-        CheckUtils.isRequireNotNull(command,"command");
+        CheckUtils.isRequireNotNull(command, "command");
 
 
         CommandDebugModel debugModel = new CommandDebugModel();

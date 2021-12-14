@@ -2,10 +2,10 @@ package com.sandbox.application.plugin.cat;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.lkx.jvm.sandbox.core.model.enhance.EnhanceClassInfo;
-import com.lkx.jvm.sandbox.core.processors.AbstractPluginModuleDefinitionProcessor;
-import com.sandbox.application.plugin.cat.listener.LogAdviceListener;
+import com.sandbox.manager.api.AdviceNameDefinition;
 import com.sandbox.manager.api.Components;
+import com.sandbox.manager.api.model.enhance.EnhanceClassInfo;
+import com.sandbox.manager.api.processors.AbstractPluginModuleDefinitionProcessor;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,25 +42,8 @@ public class CatTransactionModule extends AbstractPluginModuleDefinitionProcesso
     }
 
     @Override
-    public Set<String> getAdviceListenerName() {
-        return Sets.newHashSet(LogAdviceListener.NAME);
+    public Set<AdviceNameDefinition> getMethodAdviceInvoke() {
+        return Sets.newHashSet(AdviceNameDefinition.ERROR_INFO);
     }
-
-    //    @Resource
-//    private ModuleEventWatcher watcher;
-//
-//    @Resource
-//    private ConfigInfo configInfo;
-//
-//    @Resource
-//    private ModuleManager moduleManager;
-
-    public void loadCompleted() {
-//        UrlEvent.process(watcher);
-//        SqlEvent.process(watcher);
-//        MapperEvent.process(watcher);
-//        LogEvent.process(watcher);
-    }
-
 
 }

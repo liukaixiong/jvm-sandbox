@@ -9,6 +9,11 @@ package com.sandbox.manager.api;
  */
 public interface PluginModule extends Components {
 
+    /**
+     * 模块磨成
+     *
+     * @return
+     */
     public String moduleName();
 
 }

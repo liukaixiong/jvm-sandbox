@@ -89,6 +89,7 @@ public class MonitorProcess extends AbstractCommandInvoke {
                 return;
             }
 
+            //  todo 测试硬编码
 //            if (advice.isThrows()) {
             if (time % 2 == 0) {
                 result.getFail().getAndIncrement();
@@ -122,7 +123,7 @@ public class MonitorProcess extends AbstractCommandInvoke {
     }
 
     /**
-     * 代替取模运算
+     * 获取当前的秒数，判断当前属于哪一秒中
      *
      * @return
      */

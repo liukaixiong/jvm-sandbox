@@ -1,5 +1,7 @@
 package com.sandbox.manager.api;
 
+import org.kohsuke.MetaInfServices;
+
 /**
  * 你也可以认为他是一个标记对象，会被manager指定加载。
  *

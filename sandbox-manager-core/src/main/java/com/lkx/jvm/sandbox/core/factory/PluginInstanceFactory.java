@@ -6,19 +6,21 @@ import com.lkx.jvm.sandbox.core.compoents.InjectResource;
 import com.lkx.jvm.sandbox.core.model.classloader.PluginCoreModule;
 import com.lkx.jvm.sandbox.core.util.FileUtils;
 import com.sandbox.manager.api.Components;
+import com.sandbox.manager.api.PluginModule;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 插件实例加载工厂
+ * <p>
+ * 这里所有的对象都需要保证是无状态的，就是不要与外界有任何引用，不然卸载更新的时候会出问题。
  *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
@@ -34,32 +36,38 @@ public class PluginInstanceFactory {
 
     private InjectResource injectResource = new DefaultInjectResource();
 
-    protected List<String> getPluginNameList(){
+    protected List<String> getPluginNameList() {
         return new ArrayList<>(pluginCoreModuleCache.keySet());
     }
 
-    public <T> List<T> getPluginInstanceList(Class<T> clazz){
+    public <T> List<T> getPluginInstanceList(Class<T> clazz) {
+        return getPluginInstanceList(null, clazz);
+    }
+
+    public <T> List<T> getPluginInstanceList(String moduleName, Class<T> clazz) {
         List<T> instanceList = new ArrayList<>();
-        pluginCoreModuleCache.values().forEach((pluginCoreModule)->{
-            instanceList.addAll(pluginCoreModule.getObjectFactory().getList(clazz));
+        pluginCoreModuleCache.values().forEach((pluginCoreModule) -> {
+            if (moduleName == null || pluginCoreModule.getModuleNames().contains(moduleName)) {
+                List<T> list = pluginCoreModule.getObjectFactory().getList(clazz);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    instanceList.addAll(list);
+                }
+            }
         });
         return instanceList;
     }
-
 
     protected void loadInstance(String moduleJarFilePath) {
 
         List<File> jarFileList = jarManager.loadJarObjectFile(moduleJarFilePath);
 
-        for (int i = 0; i < jarFileList.size(); i++) {
-
-            File jarFile = jarFileList.get(i);
+        for (File jarFile : jarFileList) {
 
             unloadInstance(getJarKey(jarFile));
 
-            ManagerClassLoader managerClassLoader = new ManagerClassLoader(new URL[]{builderURL(jarFile)}, new ManagerClassLoader.Routing(
+            ManagerClassLoader managerClassLoader = new ManagerClassLoader(new URL[]{builderUrl(jarFile)}, new ManagerClassLoader.Routing(
                     this.getClass().getClassLoader(),
-                    "^com\\.sandbox\\.manager\\.api\\..*"
+                    "^com\\.sandbox\\.manager\\.api\\..*", "^com\\.alibaba\\.jvm\\.sandbox\\.api\\..*"
             ));
 
             PluginCoreModule pluginCoreModule = new PluginCoreModule();
@@ -71,6 +79,12 @@ public class PluginInstanceFactory {
             pluginObjectFactory.setInjectResource(this.injectResource);
             // 加载相应的对象
             pluginObjectFactory.loadObjectList(Components.class, managerClassLoader);
+
+            List<PluginModule> pluginModules = pluginObjectFactory.getList(PluginModule.class);
+
+            Set<String> moduleNameSet = pluginModules.stream().map(PluginModule::moduleName).collect(Collectors.toSet());
+
+            pluginCoreModule.setModuleNames(moduleNameSet);
 
             pluginCoreModule.setObjectFactory(pluginObjectFactory);
 
@@ -107,7 +121,7 @@ public class PluginInstanceFactory {
         this.injectResource = injectResource;
     }
 
-    private URL builderURL(File file) {
+    private URL builderUrl(File file) {
         try {
             File tempFile = File.createTempFile("manager_plugin", ".jar");
             tempFile.deleteOnExit();

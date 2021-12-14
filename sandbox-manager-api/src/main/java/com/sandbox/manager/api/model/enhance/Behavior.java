@@ -1,4 +1,4 @@
-package com.lkx.jvm.sandbox.core.model.enhance;
+package com.sandbox.manager.api.model.enhance;
 
 
 /**
