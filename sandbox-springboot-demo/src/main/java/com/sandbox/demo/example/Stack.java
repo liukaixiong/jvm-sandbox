@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * @date 2021/11/11 - 10:31
  */
 public class Stack {
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public void run(Integer number) {
         logger.info("进入gc被触发方法:" + number);

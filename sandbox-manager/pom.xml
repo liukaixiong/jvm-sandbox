@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.alibaba.jvm.sandbox</groupId>
+        <artifactId>sandbox-module-starter</artifactId>
+        <version>1.3.3</version>
+        <relativePath>../sandbox-module-starter/pom.xml</relativePath>
+    </parent>
+    <packaging>pom</packaging>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>sandbox-manager</artifactId>
+
+
+    <modules>
+        <module>sandbox-manager-module</module>
+        <module>sandbox-manager-web</module>
+        <module>sandbox-manager-core</module>
+        <module>sandbox-application-plugins</module>
+        <module>sandbox-manager-api</module>
+    </modules>
+
+    <build>
+        <outputDirectory>E:\study\sandbox</outputDirectory>
+    </build>
+
+</project>

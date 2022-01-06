@@ -29,7 +29,7 @@ public class Advice implements Attachment {
     private Throwable throwable;
 
     private Object attachment;
-    private Set<String> marks = new HashSet<String>();
+    private final Set<String> marks = new HashSet<String>();
 
     private Advice top = this;
     private Advice parent = this;

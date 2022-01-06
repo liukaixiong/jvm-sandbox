@@ -1,0 +1,7 @@
+spring:
+  liveBeansView:
+    mbeanDomain: sandbox-manager-module
+  profiles:
+    active: dev
+  application:
+    name: sandbox-manager-module

@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public class Size {
 
-    private List<String> list = new ArrayList<>();
-    private Map<Integer, Integer> map = new HashMap<>();
+    private final List<String> list = new ArrayList<>();
+    private final Map<Integer, Integer> map = new HashMap<>();
 
     public void run(Integer num) {
         for (int i = 0; i < num; i++) {

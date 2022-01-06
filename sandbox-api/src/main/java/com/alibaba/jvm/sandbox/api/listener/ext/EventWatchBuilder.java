@@ -313,7 +313,7 @@ public class EventWatchBuilder {
 
     private final ModuleEventWatcher moduleEventWatcher;
     private final PatternType patternType;
-    private List<BuildingForClass> bfClasses = new ArrayList<BuildingForClass>();
+    private final List<BuildingForClass> bfClasses = new ArrayList<BuildingForClass>();
 
     /**
      * 构造事件观察者构造器(通配符匹配模式)

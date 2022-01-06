@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.alibaba.jvm.sandbox</groupId>
+        <artifactId>sandbox-module-starter</artifactId>
+        <version>1.3.3</version>
+        <relativePath>../../sandbox-module-starter/pom.xml</relativePath>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>sandbox-application-plugins</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>cat-plugin</module>
+    </modules>
+
+    <dependencies>
+        <!-- 给DEBUG模块单独配置一个日志 -->
+        <dependency>
+            <groupId>com.alibaba.jvm.sandbox</groupId>
+            <artifactId>sandbox-manager-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-lib-src-webapps</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- <delete dir="src/main/webapp/WEB-INF/lib" />-->
+                                <copy todir="E:\\study\\sandbox\\sandbox-module\\manager-plugins"
+                                      overwrite="true"><!--执行复制操作,todir的值是将要复制jar包到的地方,overwrite是否重写-->
+                                    <fileset
+                                            dir="${project.build.directory}"><!--${project.build.directory}值是你的target目录-->
+                                        <include name="*-with-dependencies.jar"/><!--target目录下的jar包-->
+                                        <exclude name="sandbox-application-plugins-1.3.3-jar-with-dependencies.jar"/>
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -615,7 +615,7 @@ public class EventListenerHandler implements SpyHandler {
 
     // ----------------------------------- 单例模式 -----------------------------------
 
-    private static EventListenerHandler singleton = new EventListenerHandler();
+    private static final EventListenerHandler singleton = new EventListenerHandler();
 
     public static EventListenerHandler getSingleton() {
         return singleton;

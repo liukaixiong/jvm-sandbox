@@ -1,4 +1,6 @@
 spring:
+  liveBeansView:
+    mbeanDomain: sandbox-springboot-demo
   profiles:
     active: dev
   application:
