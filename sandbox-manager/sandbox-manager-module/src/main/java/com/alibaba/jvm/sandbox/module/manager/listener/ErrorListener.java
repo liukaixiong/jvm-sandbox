@@ -2,10 +2,8 @@ package com.alibaba.jvm.sandbox.module.manager.listener;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.lkx.jvm.sandbox.core.compoents.TraceInfoHelper;
-import com.sandbox.manager.api.Components;
-import com.sandbox.manager.api.MethodAdviceInvoke;
 import com.sandbox.manager.api.AdviceNameDefinition;
-import org.kohsuke.MetaInfServices;
+import com.sandbox.manager.api.MethodAdviceInvoke;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Component;
  * @date 2021/12/13 - 16:11
  */
 @Component
-@MetaInfServices(Components.class)
 public class ErrorListener implements MethodAdviceInvoke {
 
     private final String PLUGIN_NAME = AdviceNameDefinition.ERROR_INFO.name();

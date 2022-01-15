@@ -44,12 +44,13 @@ public class SpringContextContainer {
     public Object getBean(String beanName) throws Exception {
         return getApplicationObject("getBean", beanName);
     }
+
     public Object getBean(Class<?> beanClass) throws Exception {
         return getApplicationObject("getBean", beanClass);
     }
 
     public Object getBeansWithAnnotation(Class<? extends Annotation> annotationClass) throws Exception {
-        return getApplicationObject("getBeansWithAnnotation",annotationClass);
+        return getApplicationObject("getBeansWithAnnotation", annotationClass);
     }
 
     private Object getEnvironment() throws Exception {
@@ -65,6 +66,10 @@ public class SpringContextContainer {
      */
     public String getProperties(String key) throws Exception {
         return ObjectUtils.defaultIfNull(getObject(getEnvironment(), "getProperty", key), "").toString();
+    }
+
+    public <T> T getProperties(String key, Class<T> clazz) throws Exception {
+        return (T) ObjectUtils.defaultIfNull(getObject(getEnvironment(), "getProperty", key, clazz), "").toString();
     }
 
     /**

@@ -25,12 +25,18 @@ spring:
     testOnBorrow: false
     testOnReturn: false
     poolPreparedStatements: true
-
-    #配置监控统计拦截的filters，stat:监控统计、log4j：日志记录、wall：防御sql注入
     filters: stat
     maxPoolPreparedStatementPerConnectionSize: 20
-#    useGlobalDataSourceStat: true
-#    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  sandbox:
+    plugin:
+      register:
+        cat:
+          enhanceConfigs:
+          -  classPattern: com.sandbox.demo.controller.*
+             methodNames: '*'
+             adviceNames:
+               - PRINT_LOG
+               - CAT_TRANSACTION_POINT
 server:
   port: 5505
   servlet:

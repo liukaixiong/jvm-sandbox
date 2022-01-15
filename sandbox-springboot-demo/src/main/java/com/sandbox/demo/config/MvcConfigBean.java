@@ -1,5 +1,7 @@
 package com.sandbox.demo.config;
 
+import com.sandbox.demo.config.prop.PluginProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -16,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  **/
 @Configuration
 @EnableWebMvc
+@EnableConfigurationProperties(PluginProperties.class)
 @ComponentScan(basePackages = {"com.sandbox.demo.controller"}, includeFilters = {
         @ComponentScan.Filter(type = FilterType.ANNOTATION, value = {Controller.class})})
 public class MvcConfigBean extends WebMvcConfigurerAdapter {

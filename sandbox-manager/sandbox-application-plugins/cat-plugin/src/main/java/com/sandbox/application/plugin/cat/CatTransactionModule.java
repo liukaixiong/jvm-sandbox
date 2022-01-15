@@ -3,10 +3,8 @@ package com.sandbox.application.plugin.cat;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sandbox.manager.api.AdviceNameDefinition;
-import com.sandbox.manager.api.Components;
 import com.sandbox.manager.api.model.enhance.EnhanceClassInfo;
 import com.sandbox.manager.api.processors.AbstractPluginModuleDefinitionProcessor;
-import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,7 +20,6 @@ import java.util.Set;
  * @date 2021/12/7 19:00
  */
 @Component
-@MetaInfServices(Components.class)
 public class CatTransactionModule extends AbstractPluginModuleDefinitionProcessor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -45,7 +42,7 @@ public class CatTransactionModule extends AbstractPluginModuleDefinitionProcesso
 
     @Override
     public Set<AdviceNameDefinition> getMethodAdviceInvoke() {
-        return Sets.newHashSet(AdviceNameDefinition.ERROR_INFO);
+        return Sets.newHashSet(AdviceNameDefinition.ERROR_INFO, AdviceNameDefinition.PRINT_LOG);
     }
 
 }

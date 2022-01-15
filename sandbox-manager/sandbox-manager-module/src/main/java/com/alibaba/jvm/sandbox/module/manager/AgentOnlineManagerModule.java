@@ -10,17 +10,19 @@ import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.alibaba.jvm.sandbox.module.manager.components.CommandContainerHelper;
 import com.alibaba.jvm.sandbox.module.manager.plugin.EventWatcherLifeCycle;
-import com.alibaba.jvm.sandbox.module.manager.spring.PluginManager;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.enums.CommandEnums;
 import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
 import com.lkx.jvm.sandbox.core.factory.GlobalInstanceFactory;
 import com.lkx.jvm.sandbox.core.factory.TypeFactoryService;
 import com.lkx.jvm.sandbox.core.model.command.CommandWatcherInfoModel;
+import com.sandbox.manager.api.SpringLoadCompleted;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.wiring.BeanConfigurerSupport;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -40,7 +42,7 @@ import java.util.Set;
  */
 @MetaInfServices(Module.class)
 @Information(id = Constants.DEFAULT_MODULE_ID, version = "0.0.1", author = "liukaixiong", mode = Information.Mode.AGENT)
-public class AgentOnlineManagerModule implements Module, LoadCompleted {
+public class AgentOnlineManagerModule implements Module, LoadCompleted, SpringLoadCompleted {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -89,6 +91,8 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted {
         // 构建工厂实例
         this.annotationConfigApplicationContext = new AnnotationConfigApplicationContext();
 
+        registerSpringInternalClass(this.annotationConfigApplicationContext);
+
         // 基于Spring构建一套容器工厂
         annotationConfigApplicationContext.scan("com.alibaba.jvm.sandbox.module.manager");
 
@@ -106,8 +110,6 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted {
         // 初始化默认的插件 todo -> 从数据库中查找该应用的插件信息列表并加载.
         pluginManager.loadPlugin(pluginPath, null, new EventWatcherLifeCycle(this.moduleEventWatcher));
 
-
-
         //注册关键的四大对象
         GlobalFactoryHelper.core().registerObject(ConfigInfo.class, configInfo);
         GlobalFactoryHelper.core().registerObject(ModuleManager.class, moduleManager);
@@ -115,6 +117,15 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted {
         GlobalFactoryHelper.core().registerObject(ModuleController.class, moduleController);
 
         scanWatcherCommandPackage();
+    }
+
+    /**
+     * 注册Spring内部对象
+     *
+     * @param annotationConfigApplicationContext
+     */
+    private void registerSpringInternalClass(AnnotationConfigApplicationContext annotationConfigApplicationContext) {
+        annotationConfigApplicationContext.register(BeanConfigurerSupport.class);
     }
 
     public void scanWatcherCommandPackage() {

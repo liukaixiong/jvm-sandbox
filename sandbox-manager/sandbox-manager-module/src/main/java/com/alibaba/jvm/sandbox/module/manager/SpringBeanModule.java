@@ -13,16 +13,30 @@ import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.SpringContextContainer;
 import com.alibaba.jvm.sandbox.module.manager.handler.HeartbeatHandler;
+import com.alibaba.jvm.sandbox.module.manager.model.EnhanceConfig;
+import com.alibaba.jvm.sandbox.module.manager.model.PluginProperties;
+import com.alibaba.jvm.sandbox.module.manager.plugin.EventWatcherLifeCycle;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
+import com.alibaba.jvm.sandbox.module.manager.util.ParsePropertiesUtils;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
+import com.sandbox.manager.api.AdviceNameDefinition;
+import com.sandbox.manager.api.PluginPropertiesRegisterSupport;
 import com.sandbox.manager.api.SpringLoadCompleted;
+import com.sandbox.manager.api.model.enhance.EnhanceClassInfo;
+import com.sandbox.manager.api.processors.AbstractPluginModuleDefinitionProcessor;
+import com.sandbox.manager.api.processors.PropertiesPluginProcessor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.kohsuke.MetaInfServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -62,10 +76,21 @@ public class SpringBeanModule implements Module, LoadCompleted {
                             String applicationName = SpringContextContainer.getInstance().getProperties("spring.application.name");
                             HeartbeatHandler heartbeatHandler = new HeartbeatHandler(configInfo, moduleManager);
                             heartbeatHandler.start();
-
                             log.info("应用: " + applicationName + "  端口 : " + port + " 强制获取Spring的上下文环境并注入成功!");
                             // 这个时候需要回调容器启动方法.
                             springLoadCompletedCallback(SpringLoadCompleted::refreshCallback);
+
+                            /*
+                             * 这里可以从应用服务中获取特定的配置，然后根据配置来注册需要的监听。
+                             * 需要从各个服务中去定义属性的名称以及监听的事件；
+                             * 到达这一步说明已经持有的应用的服务配置，根据配置来灵活注册监听。
+                             *
+                             * 1. 回调的接口
+                             * 2. 配置的结构
+                             * 3. 需要支持前端传参的注册，同时应用配置的也算。
+                             *
+                             */
+                            refreshCallback();
                         } catch (Exception e) {
                             springLoadCompletedCallback(SpringLoadCompleted::errorCallback);
                             log.error("[Error-2000]-register spring bean occurred error.", e);
@@ -84,5 +109,47 @@ public class SpringBeanModule implements Module, LoadCompleted {
             }
         }
     }
+
+    public void refreshCallback() {
+//        String applicationRegisterStartKey = "application_";
+        String propertiesStartsWith = "spring.sandbox.plugin.register";
+        List<PluginPropertiesRegisterSupport> pluginPropertiesRegisterSupports = GlobalFactoryHelper.plugin().getList(PluginPropertiesRegisterSupport.class);
+
+        if (pluginPropertiesRegisterSupports == null || pluginPropertiesRegisterSupports.size() == 0) {
+            return;
+        }
+        PluginManager pluginManager = GlobalFactoryHelper.getInstance().getObject(PluginManager.class);
+        pluginPropertiesRegisterSupports.stream().map(PluginPropertiesRegisterSupport::key).forEach(key -> {
+//            String keyName = propertiesStartsWith + "." + key;
+            try {
+                PluginProperties pluginProperties = ObjectUtils.defaultIfNull(ParsePropertiesUtils.parseObject(propertiesStartsWith + "." + key, null, (pKey) -> {
+                    try {
+                        return SpringContextContainer.getInstance().getProperties(pKey);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }, PluginProperties.class), new PluginProperties());
+
+                List<EnhanceConfig> enhanceConfigs = pluginProperties.getEnhanceConfigs();
+                List<AbstractPluginModuleDefinitionProcessor> pluginModuleDefinitionProcessor = new ArrayList<>();
+                for (EnhanceConfig enhanceConfig : enhanceConfigs) {
+                    String classPattern = enhanceConfig.getClassPattern();
+                    String methodNames = enhanceConfig.getMethodNames();
+                    Set<AdviceNameDefinition> adviceNameDefinitions = enhanceConfig.toAdviceNameDefinitions();
+                    if (!CollectionUtils.isEmpty(adviceNameDefinitions)) {
+                        EnhanceClassInfo enhanceClassInfo = EnhanceClassInfo.builder().classPattern(classPattern).methodPatterns(EnhanceClassInfo.MethodPattern.transform(methodNames)).includeSubClasses(true).build();
+                        PropertiesPluginProcessor propertiesPluginProcessor = new PropertiesPluginProcessor(key, Collections.singletonList(enhanceClassInfo), adviceNameDefinitions);
+                        pluginModuleDefinitionProcessor.add(propertiesPluginProcessor);
+                    }
+                }
+                EventWatcherLifeCycle eventWatcherLifeCycle = new EventWatcherLifeCycle(this.watcher);
+                eventWatcherLifeCycle.initialization(pluginModuleDefinitionProcessor);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
 
 }

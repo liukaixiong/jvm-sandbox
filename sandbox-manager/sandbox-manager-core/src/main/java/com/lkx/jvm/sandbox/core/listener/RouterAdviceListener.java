@@ -31,7 +31,7 @@ public class RouterAdviceListener extends AdviceListener {
     }
 
     private List<MethodAdviceInvoke> getInvokeList(Set<AdviceNameDefinition> adviceListenerInvokes) {
-        return ListUtils.emptyIfNull(GlobalFactoryHelper.getInstance().getList(MethodAdviceInvoke.class)).stream().filter((adviceName) -> adviceListenerInvokes.contains(adviceName.featureName())).collect(Collectors.toList());
+        return ListUtils.emptyIfNull(GlobalFactoryHelper.plugin().getList(MethodAdviceInvoke.class)).stream().filter((adviceName) -> adviceListenerInvokes.contains(adviceName.featureName())).collect(Collectors.toList());
     }
 
     @Override

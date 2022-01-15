@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.factory;
 
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import org.junit.Test;
 import org.springframework.beans.factory.wiring.BeanConfigurerSupport;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -25,7 +26,7 @@ public class ListableObjectFactoryTest {
         context.refresh();
 
 
-        com.alibaba.jvm.sandbox.module.manager.spring.PluginManager pluginManager = new com.alibaba.jvm.sandbox.module.manager.spring.PluginManager();
+        PluginManager pluginManager = new PluginManager();
 
         BeanConfigurerSupport beanConfigurerSupport = context.getBean(BeanConfigurerSupport.class);
         beanConfigurerSupport.configureBean(pluginManager);

@@ -2,12 +2,15 @@ package com.sandbox.application.plugin.cat.listener;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.lkx.jvm.sandbox.core.compoents.PrintFormat;
+import com.lkx.jvm.sandbox.core.util.Strings;
 import com.sandbox.manager.api.AdviceNameDefinition;
 import com.sandbox.manager.api.MethodAdviceInvoke;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 /**
  * 动态日志的植入
@@ -17,7 +20,7 @@ import org.springframework.stereotype.Component;
  * @date 2021/12/8 - 17:25
  */
 @Component
-public class LogAdviceListener implements MethodAdviceInvoke , ApplicationContextAware {
+public class LogAdviceListener implements MethodAdviceInvoke, ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
@@ -36,20 +39,12 @@ public class LogAdviceListener implements MethodAdviceInvoke , ApplicationContex
         if (!advice.isProcessTop()) {
             return;
         }
-
         Object[] parameterArray = advice.getParameterArray();
         Object msg = parameterArray[0];
         if (msg instanceof String) {
             String content = msg.toString();
             if (parameterArray.length > 1) {
-                Object logParams = advice.getParameterArray()[1];
-                if (logParams instanceof Object[]) {
-                    Object[] logParameterArray = (Object[]) logParams;
-                    for (int i = 0; i < logParameterArray.length; i++) {
-                        Object o = logParameterArray[i];
-                        content = content.replaceFirst("\\{}", o.toString());
-                    }
-                }
+                content = Strings.lenientFormat(content, "{}", Arrays.copyOfRange(parameterArray, 1, parameterArray.length));
             }
             PrintFormat format = new PrintFormat();
             format.put("打印事件", "LOG");

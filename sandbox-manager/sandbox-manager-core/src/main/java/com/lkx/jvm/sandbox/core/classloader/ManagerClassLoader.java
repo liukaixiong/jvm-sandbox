@@ -28,7 +28,8 @@ public class ManagerClassLoader extends URLClassLoader {
         String[] routerClass = Arrays.asList(
                 "^com\\.sandbox\\.manager\\.api\\..*",
                 "^com\\.alibaba\\.jvm\\.sandbox\\.api\\..*",
-                "^com\\.lkx\\.jvm\\.sandbox\\..*"
+                "^com\\.lkx\\.jvm\\.sandbox\\..*",
+                "^org\\.springframework\\..*"
         ).toArray(new String[0]);
 
         this.routingArray = new Routing[]{

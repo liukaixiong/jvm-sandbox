@@ -1,7 +1,7 @@
 package com.alibaba.jvm.sandbox.module.manager;
 
 import com.alibaba.jvm.sandbox.module.manager.plugin.NullPluginProcessorLifeCycle;
-import com.alibaba.jvm.sandbox.module.manager.spring.PluginManager;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;
 import com.sandbox.manager.api.MethodAdviceInvoke;
 import com.sandbox.manager.api.Trace;

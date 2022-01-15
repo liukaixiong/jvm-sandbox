@@ -57,6 +57,7 @@ public class HeartbeatHandler {
                 @Override
                 public void run() {
                     try {
+                        logger.info("开始调度程序...");
                         innerReport();
                     } catch (Exception e) {
                         logger.error("error occurred when report heartbeat", e);

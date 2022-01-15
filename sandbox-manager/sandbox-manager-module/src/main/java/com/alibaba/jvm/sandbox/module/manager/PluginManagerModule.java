@@ -6,7 +6,7 @@ import com.alibaba.jvm.sandbox.api.annotation.Command;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.module.manager.model.PluginListModel;
 import com.alibaba.jvm.sandbox.module.manager.plugin.EventWatcherLifeCycle;
-import com.alibaba.jvm.sandbox.module.manager.spring.PluginManager;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.alibaba.jvm.sandbox.module.manager.util.ResponseUtils;
 import com.lkx.jvm.sandbox.core.Constants;
 import com.lkx.jvm.sandbox.core.factory.GlobalFactoryHelper;

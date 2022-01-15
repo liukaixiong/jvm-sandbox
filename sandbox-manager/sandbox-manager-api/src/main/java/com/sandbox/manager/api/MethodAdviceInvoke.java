@@ -9,7 +9,7 @@ import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
  * @Email liukx@elab-plus.com
  * @date 2021/12/10 - 11:39
  */
-public interface MethodAdviceInvoke extends Components, AdviceDefinition {
+public interface MethodAdviceInvoke extends AdviceDefinition {
 
     /**
      * 方法调用前通知

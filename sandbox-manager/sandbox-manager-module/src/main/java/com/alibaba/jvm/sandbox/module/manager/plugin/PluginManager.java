@@ -1,8 +1,7 @@
-package com.alibaba.jvm.sandbox.module.manager.spring;
+package com.alibaba.jvm.sandbox.module.manager.plugin;
 
 import com.alibaba.jvm.sandbox.module.manager.model.PluginEventWatcherInfo;
 import com.alibaba.jvm.sandbox.module.manager.model.PluginListModel;
-import com.alibaba.jvm.sandbox.module.manager.plugin.PluginProcessorWatcherService;
 import com.google.common.base.Stopwatch;
 import com.lkx.jvm.sandbox.core.classloader.ManagerClassLoader;
 import com.lkx.jvm.sandbox.core.factory.JarManager;
@@ -58,11 +57,8 @@ public class PluginManager implements ApplicationContextAware {
      */
     public PluginListModel getPluginList(String pluginPath) {
         PluginListModel pluginListModel = new PluginListModel();
-
         List<String> unloadList = jarManager.loadJarObjectFile(pluginPath).stream().map(File::getName).collect(Collectors.toList());
-
         ArrayList<String> loadList = new ArrayList<>(pluginCoreModuleCache.keySet());
-
         List<PluginEventWatcherInfo> pluginInfoList = pluginCoreModuleCache.values().stream().map(PluginInfo::getPluginProcessorWatcherService).map(PluginProcessorWatcherService::getPluginEventList).flatMap(Collection::stream).collect(Collectors.toList());
         pluginListModel.setLoadComplete(loadList);
         pluginListModel.setUnload(unloadList);
@@ -104,22 +100,25 @@ public class PluginManager implements ApplicationContextAware {
             pluginApplicationContext.scan("com.sandbox.application.plugin");
             pluginApplicationContext.refresh();
             long nanos = started.elapsed(TimeUnit.MILLISECONDS);
+            log.debug("工厂刷新耗时:{}", nanos);
 
-
-            PluginInfo pluginInfo = new PluginInfo();
-            pluginInfo.setModuleName(jarKey);
-            pluginInfo.setPluginContext(pluginApplicationContext);
-
-            if (pluginLifeCycle != null) {
-                pluginInfo.setPluginProcessorWatcherService(pluginLifeCycle);
-                Map<String, AbstractPluginModuleDefinitionProcessor> pluginModuleDefinitionProcessorMap = pluginApplicationContext.getBeansOfType(AbstractPluginModuleDefinitionProcessor.class);
-                pluginLifeCycle.initialization(new ArrayList<>(pluginModuleDefinitionProcessorMap.values()));
-            }
-
-            pluginCoreModuleCache.put(jarKey, pluginInfo);
-
-            log.info("加载应用 {} 耗时 : {} ", jarKey, nanos);
+            registerPluginInfo(jarKey, pluginLifeCycle, pluginApplicationContext);
         }
+    }
+
+    public void registerPluginInfo(String pluginName, PluginProcessorWatcherService pluginLifeCycle, AnnotationConfigApplicationContext pluginApplicationContext) {
+        PluginInfo pluginInfo = new PluginInfo();
+        pluginInfo.setModuleName(pluginName);
+        pluginInfo.setPluginContext(pluginApplicationContext);
+        pluginCoreModuleCache.put(pluginName, pluginInfo);
+
+        if (pluginLifeCycle != null) {
+            pluginInfo.setPluginProcessorWatcherService(pluginLifeCycle);
+            Map<String, AbstractPluginModuleDefinitionProcessor> pluginModuleDefinitionProcessorMap = pluginApplicationContext.getBeansOfType(AbstractPluginModuleDefinitionProcessor.class);
+            pluginLifeCycle.initialization(new ArrayList<>(pluginModuleDefinitionProcessorMap.values()));
+        }
+
+        log.info("加载应用 {}  完成", pluginName);
     }
 
     /**

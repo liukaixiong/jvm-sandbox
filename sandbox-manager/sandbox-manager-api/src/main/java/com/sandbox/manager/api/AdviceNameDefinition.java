@@ -22,7 +22,11 @@ public enum AdviceNameDefinition {
     /**
      * 植入日志
      */
-    PRINT_LOG("关键日志");
+    PRINT_LOG("关键日志"),
+
+    CAT_TRANSACTION_POINT("CAT事务埋点"),
+
+    CAT_EVENT_POINT("CAT事件埋点");
 
     private final String describe;
 
@@ -33,4 +37,6 @@ public enum AdviceNameDefinition {
     public String getDescribe() {
         return describe;
     }
+
+
 }

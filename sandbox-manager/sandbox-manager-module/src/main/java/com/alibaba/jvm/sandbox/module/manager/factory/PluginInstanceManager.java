@@ -1,6 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.factory;
 
-import com.alibaba.jvm.sandbox.module.manager.spring.PluginManager;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.lkx.jvm.sandbox.core.enums.FactoryTypeEnums;
 import com.lkx.jvm.sandbox.core.factory.TypeFactoryService;
 import com.lkx.jvm.sandbox.core.util.BooleanOptional;
