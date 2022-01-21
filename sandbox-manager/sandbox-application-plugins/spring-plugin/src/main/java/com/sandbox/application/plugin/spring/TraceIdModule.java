@@ -1,12 +1,10 @@
-package com.sandbox.application.plugin.cat;
+package com.sandbox.application.plugin.spring;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sandbox.manager.api.AdviceNameDefinition;
 import com.sandbox.manager.api.model.enhance.EnhanceClassInfo;
 import com.sandbox.manager.api.processors.AbstractPluginModuleDefinitionProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,29 +18,27 @@ import java.util.Set;
  * @date 2021/12/7 19:00
  */
 @Component
-public class CatTransactionModule extends AbstractPluginModuleDefinitionProcessor {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
+public class TraceIdModule extends AbstractPluginModuleDefinitionProcessor {
 
     @Override
     public String moduleName() {
-        return "cat-plugin";
+        return "spring-plugin";
     }
 
     @Override
     public String pluginName() {
-        return "cat-transaction-plugin";
+        return "log-id-plugin";
     }
 
     @Override
     public List<EnhanceClassInfo> getEnhanceClassInfos() {
-        EnhanceClassInfo log = EnhanceClassInfo.builder().classPattern("org.slf4j.Logger").methodPatterns(EnhanceClassInfo.MethodPattern.transform("info", "debug")).includeSubClasses(true).build();
+        EnhanceClassInfo log = EnhanceClassInfo.builder().classPattern("org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice").methodPatterns(EnhanceClassInfo.MethodPattern.transform("beforeBodyWrite")).includeSubClasses(true).build();
         return Lists.newArrayList(log);
     }
 
     @Override
     public Set<AdviceNameDefinition> getMethodAdviceInvoke() {
-        return Sets.newHashSet(AdviceNameDefinition.ERROR_INFO, AdviceNameDefinition.PRINT_LOG);
+        return Sets.newHashSet(AdviceNameDefinition.TRACE_ID);
     }
 
 }

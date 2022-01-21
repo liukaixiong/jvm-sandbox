@@ -24,7 +24,13 @@ public enum AdviceNameDefinition {
      */
     PRINT_LOG("关键日志"),
 
-    CAT_TRANSACTION_POINT("CAT事务埋点"),
+    CAT_METHOD_TRANSACTION_POINT("CAT方法事务埋点"),
+
+    CAT_URL_TRANSACTION_POINT("CAT请求事务埋点"),
+
+    CAT_MYBATIS_TRANSACTION_POINT("CAT_Mybatis埋点"),
+
+    TRACE_ID("日志链路编号"),
 
     CAT_EVENT_POINT("CAT事件埋点");
 

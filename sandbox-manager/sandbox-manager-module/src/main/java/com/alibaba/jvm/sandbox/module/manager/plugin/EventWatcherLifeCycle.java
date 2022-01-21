@@ -110,6 +110,7 @@ public class EventWatcherLifeCycle implements PluginProcessorWatcherService {
                 if (ArrayUtils.isNotEmpty(mp.getAnnotationTypes())) {
                     behavior.hasAnnotationTypes(mp.getAnnotationTypes());
                 }
+
             }
 
             pluginEventWatcherInfo.setMethodName(methods.toString());

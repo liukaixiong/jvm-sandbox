@@ -68,6 +68,19 @@ public class SpringContextContainer {
         return ObjectUtils.defaultIfNull(getObject(getEnvironment(), "getProperty", key), "").toString();
     }
 
+    /**
+     * 获取应用项目名称
+     *
+     * @return
+     */
+    public String getApplicationName() {
+        try {
+            return getProperties("spring.application.name");
+        } catch (Exception e) {
+            return "unknow";
+        }
+    }
+
     public <T> T getProperties(String key, Class<T> clazz) throws Exception {
         return (T) ObjectUtils.defaultIfNull(getObject(getEnvironment(), "getProperty", key, clazz), "").toString();
     }

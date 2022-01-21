@@ -16,6 +16,7 @@ import java.util.function.Function;
  * @Email liukx@elab-plus.com
  * @date 2021/11/26 - 18:40
  */
+@Deprecated
 public class UrlEvent {
 
     /**

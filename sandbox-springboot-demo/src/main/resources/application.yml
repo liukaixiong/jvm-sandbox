@@ -32,11 +32,11 @@ spring:
       register:
         cat:
           enhanceConfigs:
-          -  classPattern: com.sandbox.demo.controller.*
-             methodNames: '*'
-             adviceNames:
-               - PRINT_LOG
-               - CAT_TRANSACTION_POINT
+            - classPattern: com.sandbox.demo.service.*
+              methodNames: '*'
+              isEqualsInterface: true
+              adviceNames:
+                - CAT_METHOD_TRANSACTION_POINT
 server:
   port: 5505
   servlet:
@@ -45,8 +45,19 @@ server:
 mybatis-plus:
   mapper-locations: classpath*:/mybatis/mapper/*.xml
   type-aliases-package: com.sandbox.demo.mapper
-#  config-location: classpath:/mybatis/mybatis-config.xml
-mybatis:
+  global-config:
+    db-config:
+      id-type: auto
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+#  config-location: classpath:/mybatis/mybatis-config.xml
+#mybatis:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.sandbox.demo: debug
+
+app.name: sandbox-springboot-demo-name

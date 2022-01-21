@@ -13,7 +13,6 @@ import static java.util.logging.Level.WARNING;
  */
 public class Strings {
 
-
     public static String lenientFormat(
             @Nullable String template, String symbol, @Nullable Object @Nullable ... args) {
         template = String.valueOf(template); // null -> "null"

@@ -13,6 +13,7 @@ import com.lkx.jvm.sandbox.core.compoents.PrintFormat;
  * @Email liukx@elab-plus.com
  * @date 2021/11/26 - 18:33
  */
+@Deprecated
 public class MapperEvent {
     public static void process(ModuleEventWatcher watcher) {
         // UPDATE

@@ -41,12 +41,12 @@ public class MapperController {
 
     @GetMapping(value = "/updateById", produces = "application/json;charset=UTF-8")
     public Map<String, Object> updateById() {
-        logger.info("开始触发了updateById方法");
+        logger.debug("开始触发了updateById方法");
         ApiTest apiTest = new ApiTest();
-        apiTest.setId(1);
+        apiTest.setId(1L);
         apiTest.setValue("lkx-" + System.currentTimeMillis());
         int result = apiTestMapper.updateById(apiTest);
-        logger.info("结束触发方法，得到返回值：{} , 其他参数 {} ,{} ,{}", result, "a1", "a2", "a3");
+        logger.debug("结束触发方法，得到返回值：{} , 其他参数 {} ,{} ,{}", result, "a1", "a2", "a3");
         return trues();
     }
 
@@ -58,6 +58,14 @@ public class MapperController {
         return trues();
     }
 
+    @GetMapping(value = "/complexMapper", produces = "application/json;charset=UTF-8")
+    public Map<String, Object> complexMapper() {
+        insert();
+        getObject();
+        updateById();
+        index();
+        return trues();
+    }
 
     public Map<String, Object> trues() {
         Map<String, Object> map = new HashMap<>();

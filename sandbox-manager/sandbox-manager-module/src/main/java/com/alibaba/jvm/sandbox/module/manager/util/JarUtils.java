@@ -1,6 +1,5 @@
 package com.alibaba.jvm.sandbox.module.manager.util;
 
-import com.alibaba.jvm.sandbox.api.Module;
 import com.lkx.jvm.sandbox.core.classloader.ManagerClassLoader;
 import com.lkx.jvm.sandbox.core.compoents.InjectResource;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -37,7 +36,7 @@ public class JarUtils {
         File jarFile = new File(jarPath);
         List<T> objList = new ArrayList<>();
 
-        ManagerClassLoader managerClassLoader = new ManagerClassLoader(new URL[]{new URL("file:" + jarFile.getPath())});
+        ManagerClassLoader managerClassLoader = new ManagerClassLoader(jarFile.getName(), new URL[]{new URL("file:" + jarFile.getPath())});
 //        ModuleJarClassLoader moduleJarClassLoader = new ModuleJarClassLoader(jarFile);
         final ServiceLoader<T> moduleServiceLoader = ServiceLoader.load(clazz, managerClassLoader);
         final Iterator<T> moduleIt = moduleServiceLoader.iterator();
@@ -74,8 +73,8 @@ public class JarUtils {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        String jarFile = "E:\\study\\sandbox\\sandbox-module\\cat-plugin-1.3.3-jar-with-dependencies.jar";
-        loadObjectList(jarFile, Module.class);
-    }
+//    public static void main(String[] args) throws Exception {
+//        String jarFile = "E:\\study\\sandbox\\sandbox-module\\cat-plugin-1.3.3-jar-with-dependencies.jar";
+//        loadObjectList(jarFile, Module.class);
+//    }
 }

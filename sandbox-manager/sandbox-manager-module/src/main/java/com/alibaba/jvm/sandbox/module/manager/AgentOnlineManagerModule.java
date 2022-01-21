@@ -9,6 +9,7 @@ import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.AbstractCommandInvoke;
 import com.alibaba.jvm.sandbox.module.manager.components.CommandContainerHelper;
+import com.alibaba.jvm.sandbox.module.manager.consts.ManagerConstants;
 import com.alibaba.jvm.sandbox.module.manager.plugin.EventWatcherLifeCycle;
 import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.lkx.jvm.sandbox.core.Constants;
@@ -82,7 +83,7 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted, SpringLo
      * @throws Exception
      */
     public void refreshManagerFactory() throws Exception {
-        String pluginDirName = "manager-plugins";
+        String pluginDirName = ManagerConstants.PLUGIN_DIR_NAME;
 //        String pluginPath = configInfo.getUserModuleLibPaths()[0] + "\\" + pluginDirName;
 
         // todo 得修改

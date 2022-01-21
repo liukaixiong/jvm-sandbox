@@ -58,4 +58,19 @@ public class BooleanOptional<T> {
         return null;
     }
 
+    /**
+     * if else 简写
+     *
+     * @param test
+     * @param trueValue
+     * @param elseValue
+     * @param <T>
+     * @return
+     */
+    public static <T> T ifElse(boolean test, T trueValue, T elseValue) {
+        if (test) {
+            return trueValue;
+        }
+        return elseValue;
+    }
 }

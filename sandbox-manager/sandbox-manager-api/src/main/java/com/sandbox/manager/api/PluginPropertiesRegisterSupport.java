@@ -9,6 +9,11 @@ package com.sandbox.manager.api;
  */
 public interface PluginPropertiesRegisterSupport {
 
+    /**
+     * 属性应用配置
+     *
+     * @return
+     */
     public String key();
 
 }

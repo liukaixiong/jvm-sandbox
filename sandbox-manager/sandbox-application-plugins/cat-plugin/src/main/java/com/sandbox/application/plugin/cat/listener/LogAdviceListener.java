@@ -1,7 +1,8 @@
 package com.sandbox.application.plugin.cat.listener;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
-import com.lkx.jvm.sandbox.core.compoents.PrintFormat;
+import com.dianping.cat.Cat;
+import com.dianping.cat.message.Event;
 import com.lkx.jvm.sandbox.core.util.Strings;
 import com.sandbox.manager.api.AdviceNameDefinition;
 import com.sandbox.manager.api.MethodAdviceInvoke;
@@ -35,21 +36,42 @@ public class LogAdviceListener implements MethodAdviceInvoke, ApplicationContext
     }
 
     @Override
+    public boolean preHandler(Advice advice) {
+        return advice.isProcessTop() && Cat.getManager().isCatEnabled() && Cat.getManager().hasContext() && advice.getParameterArray().length > 0;
+    }
+
+    @Override
     public void before(Advice advice) throws Throwable {
-        if (!advice.isProcessTop()) {
-            return;
-        }
+
+        String name = advice.getBehavior().getName();
         Object[] parameterArray = advice.getParameterArray();
-        Object msg = parameterArray[0];
-        if (msg instanceof String) {
-            String content = msg.toString();
+        if (parameterArray.length > 0) {
+            String msg = parameterArray[0].toString();
+            String content = msg.concat("");
             if (parameterArray.length > 1) {
-                content = Strings.lenientFormat(content, "{}", Arrays.copyOfRange(parameterArray, 1, parameterArray.length));
+                // Arrays.copyOfRange(parameterArray, 1, parameterArray.length)
+                Object arrayValue = parameterArray[1];
+                if (arrayValue instanceof Object[]) {
+                    content = Strings.lenientFormat(content, "{}", (Object[]) arrayValue);
+                } else {
+                    content = Strings.lenientFormat(content, "{}", arrayValue);
+                }
             }
-            PrintFormat format = new PrintFormat();
-            format.put("打印事件", "LOG");
-            format.put("日志内容", content);
-            format.printLog();
+
+//            PrintFormat format = new PrintFormat();
+//            format.put("打印事件", "LOG");
+//            format.put("级别", name);
+//            format.put("日志内容", content);
+//            format.printLog();
+
+            if ("error".equals(name)) {
+                Arrays.stream(parameterArray).filter((param) -> param instanceof Throwable).findFirst().ifPresent((throwable) -> {
+                    Cat.logError(throwable.toString(), (Throwable) throwable);
+                });
+            } else {
+                Cat.logEvent("LOG", name, Event.SUCCESS, content);
+            }
         }
+
     }
 }

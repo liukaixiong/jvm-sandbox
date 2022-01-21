@@ -18,6 +18,7 @@ import java.util.Map;
  * @Email liukx@elab-plus.com
  * @date 2021/11/26 - 18:27
  */
+@Deprecated
 public class SqlEvent {
 
     public static void process(ModuleEventWatcher watcher) {

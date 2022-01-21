@@ -1,8 +1,8 @@
 package com.sandbox.application.plugin.cat.trace;
 
+import com.dianping.cat.Cat;
 import com.sandbox.manager.api.MethodAdviceInvoke;
 import com.sandbox.manager.api.Trace;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,9 +21,6 @@ public class CatTrace implements Trace {
 
     @Override
     public String getId() {
-        String id = "cat-" + RandomUtils.nextInt(10000, 99999) + "";
-        System.out.println("cat id 获取:" + id);
-        methodAdviceInvokes.forEach(System.out::println);
-        return id;
+        return Cat.getCurrentMessageId();
     }
 }

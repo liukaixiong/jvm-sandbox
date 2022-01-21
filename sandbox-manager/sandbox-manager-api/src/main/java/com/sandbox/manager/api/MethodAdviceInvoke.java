@@ -12,6 +12,16 @@ import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 public interface MethodAdviceInvoke extends AdviceDefinition {
 
     /**
+     * 执行之前判断
+     *
+     * @param advice
+     * @return
+     */
+    default boolean preHandler(Advice advice) {
+        return true;
+    }
+
+    /**
      * 方法调用前通知
      * <ul>
      * <li>通知处理与当前业务同属一个线程</li>

@@ -21,6 +21,17 @@ public class EnhanceConfig {
 
     private List<String> adviceNames;
 
+    private boolean includeSubClasses = true;
+
+    public boolean isIncludeSubClasses() {
+        return includeSubClasses;
+    }
+
+    public void setIncludeSubClasses(boolean includeSubClasses) {
+        this.includeSubClasses = includeSubClasses;
+    }
+
+
     public String getClassPattern() {
         return classPattern;
     }

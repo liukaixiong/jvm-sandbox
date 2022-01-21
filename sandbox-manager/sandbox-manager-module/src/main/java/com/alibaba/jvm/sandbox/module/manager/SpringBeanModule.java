@@ -12,10 +12,12 @@ import com.alibaba.jvm.sandbox.api.resource.ConfigInfo;
 import com.alibaba.jvm.sandbox.api.resource.ModuleEventWatcher;
 import com.alibaba.jvm.sandbox.api.resource.ModuleManager;
 import com.alibaba.jvm.sandbox.module.manager.components.SpringContextContainer;
+import com.alibaba.jvm.sandbox.module.manager.consts.ManagerConstants;
 import com.alibaba.jvm.sandbox.module.manager.handler.HeartbeatHandler;
 import com.alibaba.jvm.sandbox.module.manager.model.EnhanceConfig;
 import com.alibaba.jvm.sandbox.module.manager.model.PluginProperties;
 import com.alibaba.jvm.sandbox.module.manager.plugin.EventWatcherLifeCycle;
+import com.alibaba.jvm.sandbox.module.manager.plugin.PluginApplicationProperties;
 import com.alibaba.jvm.sandbox.module.manager.plugin.PluginManager;
 import com.alibaba.jvm.sandbox.module.manager.util.ParsePropertiesUtils;
 import com.lkx.jvm.sandbox.core.Constants;
@@ -73,7 +75,7 @@ public class SpringBeanModule implements Module, LoadCompleted {
                             SpringContextContainer.getInstance().setApplicationContext(factory);
                             SpringContextContainer.getInstance().setLoad(true);
                             String port = SpringContextContainer.getInstance().getProperties("server.port");
-                            String applicationName = SpringContextContainer.getInstance().getProperties("spring.application.name");
+                            String applicationName = SpringContextContainer.getInstance().getApplicationName();
                             HeartbeatHandler heartbeatHandler = new HeartbeatHandler(configInfo, moduleManager);
                             heartbeatHandler.start();
                             log.info("应用: " + applicationName + "  端口 : " + port + " 强制获取Spring的上下文环境并注入成功!");
@@ -111,18 +113,17 @@ public class SpringBeanModule implements Module, LoadCompleted {
     }
 
     public void refreshCallback() {
-//        String applicationRegisterStartKey = "application_";
-        String propertiesStartsWith = "spring.sandbox.plugin.register";
         List<PluginPropertiesRegisterSupport> pluginPropertiesRegisterSupports = GlobalFactoryHelper.plugin().getList(PluginPropertiesRegisterSupport.class);
 
-        if (pluginPropertiesRegisterSupports == null || pluginPropertiesRegisterSupports.size() == 0) {
+        if (CollectionUtils.isEmpty(pluginPropertiesRegisterSupports)) {
+            log.debug("无需增强应用配置");
             return;
         }
+
         PluginManager pluginManager = GlobalFactoryHelper.getInstance().getObject(PluginManager.class);
         pluginPropertiesRegisterSupports.stream().map(PluginPropertiesRegisterSupport::key).forEach(key -> {
-//            String keyName = propertiesStartsWith + "." + key;
             try {
-                PluginProperties pluginProperties = ObjectUtils.defaultIfNull(ParsePropertiesUtils.parseObject(propertiesStartsWith + "." + key, null, (pKey) -> {
+                PluginProperties pluginProperties = ObjectUtils.defaultIfNull(ParsePropertiesUtils.parseObject(ManagerConstants.PROPERTIES_STARTS_WITH.concat("." + key), null, (pKey) -> {
                     try {
                         return SpringContextContainer.getInstance().getProperties(pKey);
                     } catch (Exception e) {
@@ -136,17 +137,23 @@ public class SpringBeanModule implements Module, LoadCompleted {
                 for (EnhanceConfig enhanceConfig : enhanceConfigs) {
                     String classPattern = enhanceConfig.getClassPattern();
                     String methodNames = enhanceConfig.getMethodNames();
+
                     Set<AdviceNameDefinition> adviceNameDefinitions = enhanceConfig.toAdviceNameDefinitions();
                     if (!CollectionUtils.isEmpty(adviceNameDefinitions)) {
-                        EnhanceClassInfo enhanceClassInfo = EnhanceClassInfo.builder().classPattern(classPattern).methodPatterns(EnhanceClassInfo.MethodPattern.transform(methodNames)).includeSubClasses(true).build();
+                        EnhanceClassInfo enhanceClassInfo = EnhanceClassInfo.builder().classPattern(classPattern).methodPatterns(EnhanceClassInfo.MethodPattern.transform(methodNames)).includeSubClasses(enhanceConfig.isIncludeSubClasses()).build();
                         PropertiesPluginProcessor propertiesPluginProcessor = new PropertiesPluginProcessor(key, Collections.singletonList(enhanceClassInfo), adviceNameDefinitions);
                         pluginModuleDefinitionProcessor.add(propertiesPluginProcessor);
                     }
                 }
+                String applicationName = SpringContextContainer.getInstance().getApplicationName();
                 EventWatcherLifeCycle eventWatcherLifeCycle = new EventWatcherLifeCycle(this.watcher);
+                PluginApplicationProperties pluginApplicationProperties = new PluginApplicationProperties();
+                pluginApplicationProperties.setName(applicationName);
+                pluginApplicationProperties.setVersion("main");
                 eventWatcherLifeCycle.initialization(pluginModuleDefinitionProcessor);
+                pluginManager.registerPluginInfo(applicationName, pluginApplicationProperties, eventWatcherLifeCycle);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("刷新应用增强配置异常", e);
             }
         });
     }

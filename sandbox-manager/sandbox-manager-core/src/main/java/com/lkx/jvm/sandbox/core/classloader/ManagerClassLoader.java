@@ -21,9 +21,11 @@ public class ManagerClassLoader extends URLClassLoader {
 
     private final Logger logger = LoggerFactory.getLogger(ManagerClassLoader.class);
     private final Routing[] routingArray;
+    private String pluginName;
 
-    public ManagerClassLoader(final URL[] urls) {
-        super(urls);
+    public ManagerClassLoader(String name, final URL[] urls) {
+        super(urls, ManagerClassLoader.class.getClassLoader().getParent());// todo 这里这么做的话，就无法做到隔离了。
+        this.pluginName = name;
 
         String[] routerClass = Arrays.asList(
                 "^com\\.sandbox\\.manager\\.api\\..*",
@@ -32,10 +34,19 @@ public class ManagerClassLoader extends URLClassLoader {
                 "^org\\.springframework\\..*"
         ).toArray(new String[0]);
 
+        Routing routing = getRouter(routerClass, this.getClass().getClassLoader());
+
         this.routingArray = new Routing[]{
-                new ManagerClassLoader.Routing(this.getClass().getClassLoader(), routerClass)
+                routing
         };
     }
+
+    private Routing getRouter(String[] routerClass, ClassLoader classLoader) {
+
+
+        return new Routing(classLoader, routerClass);
+    }
+
 
     public ManagerClassLoader(final URL[] urls,
                               final Routing... routingArray) {
@@ -154,6 +165,9 @@ public class ManagerClassLoader extends URLClassLoader {
 
     }
 
+    public String getPluginName() {
+        return pluginName;
+    }
 
     @Override
     protected void finalize() throws Throwable {

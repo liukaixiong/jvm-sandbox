@@ -20,12 +20,17 @@ public class TypePoolTools {
 
     static {
         primitiveSet.put(Integer.class, Integer::parseInt);
+        primitiveSet.put(int.class, Integer::parseInt);
         primitiveSet.put(Long.class, Long::parseLong);
+        primitiveSet.put(long.class, Long::parseLong);
         primitiveSet.put(Boolean.class, Boolean::parseBoolean);
+        primitiveSet.put(boolean.class, Boolean::parseBoolean);
         primitiveSet.put(Date.class, TypePoolTools::parseDate);
         primitiveSet.put(String.class, s -> s);
         primitiveSet.put(Double.class, Double::parseDouble);
+        primitiveSet.put(double.class, Double::parseDouble);
         primitiveSet.put(Float.class, Float::parseFloat);
+        primitiveSet.put(float.class, Float::parseFloat);
     }
 
     /**

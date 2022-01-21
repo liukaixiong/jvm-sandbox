@@ -1,5 +1,6 @@
 package com.alibaba.jvm.sandbox.module.manager.plugin;
 
+import com.alibaba.jvm.sandbox.module.manager.consts.ManagerConstants;
 import com.alibaba.jvm.sandbox.module.manager.model.PluginEventWatcherInfo;
 import com.alibaba.jvm.sandbox.module.manager.model.PluginListModel;
 import com.google.common.base.Stopwatch;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Component;
 import sun.misc.ClassLoaderUtil;
 
@@ -88,35 +90,55 @@ public class PluginManager implements ApplicationContextAware {
 
             unloadInstance(jarKey);
 
-            ManagerClassLoader managerClassLoader = new ManagerClassLoader(new URL[]{builderUrl(jarFile)});
+            ManagerClassLoader managerClassLoader = new ManagerClassLoader(jarKey, new URL[]{builderUrl(jarFile)});
 
             // 构建插件的上下文
             AnnotationConfigApplicationContext pluginApplicationContext = new AnnotationConfigApplicationContext();
             pluginApplicationContext.setClassLoader(managerClassLoader);
             pluginApplicationContext.setParent(this.applicationContext);
 
-            // todo : 可以约定一个包名,不确定是否会扫到依赖的包
             Stopwatch started = Stopwatch.createStarted();
-            pluginApplicationContext.scan("com.sandbox.application.plugin");
+
+            PluginApplicationProperties applicationProperties = getApplicationProperties(managerClassLoader);
+            pluginApplicationContext.scan(ManagerConstants.PLUGIN_PACKAGE);
             pluginApplicationContext.refresh();
             long nanos = started.elapsed(TimeUnit.MILLISECONDS);
             log.debug("工厂刷新耗时:{}", nanos);
 
-            registerPluginInfo(jarKey, pluginLifeCycle, pluginApplicationContext);
+            registerPluginInfo(jarKey, applicationProperties, pluginLifeCycle, pluginApplicationContext);
+
+            if (pluginLifeCycle != null) {
+                // 由于这里可能是配置文件注册的，工厂内部肯定是找不到的。
+                Map<String, AbstractPluginModuleDefinitionProcessor> pluginModuleDefinitionProcessorMap = pluginApplicationContext.getBeansOfType(AbstractPluginModuleDefinitionProcessor.class);
+                pluginLifeCycle.initialization(new ArrayList<>(pluginModuleDefinitionProcessorMap.values()));
+            }
         }
     }
 
-    public void registerPluginInfo(String pluginName, PluginProcessorWatcherService pluginLifeCycle, AnnotationConfigApplicationContext pluginApplicationContext) {
+    private PluginApplicationProperties getApplicationProperties(ClassLoader classLoader) {
+        try {
+            Properties properties = PropertiesLoaderUtils.loadAllProperties(ManagerConstants.PLUGIN_PROPERTIES_NAME, classLoader);
+            return PluginApplicationProperties.builder(properties);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void registerPluginInfo(String pluginName, PluginApplicationProperties
+            applicationProperties, PluginProcessorWatcherService pluginLifeCycle) {
+        registerPluginInfo(pluginName, applicationProperties, pluginLifeCycle, null);
+    }
+
+    public void registerPluginInfo(String pluginName, PluginApplicationProperties
+            applicationProperties, PluginProcessorWatcherService pluginLifeCycle, AnnotationConfigApplicationContext
+                                           pluginApplicationContext) {
         PluginInfo pluginInfo = new PluginInfo();
         pluginInfo.setModuleName(pluginName);
         pluginInfo.setPluginContext(pluginApplicationContext);
+        pluginInfo.setApplicationProperties(applicationProperties);
+        pluginInfo.setPluginProcessorWatcherService(pluginLifeCycle);
         pluginCoreModuleCache.put(pluginName, pluginInfo);
-
-        if (pluginLifeCycle != null) {
-            pluginInfo.setPluginProcessorWatcherService(pluginLifeCycle);
-            Map<String, AbstractPluginModuleDefinitionProcessor> pluginModuleDefinitionProcessorMap = pluginApplicationContext.getBeansOfType(AbstractPluginModuleDefinitionProcessor.class);
-            pluginLifeCycle.initialization(new ArrayList<>(pluginModuleDefinitionProcessorMap.values()));
-        }
 
         log.info("加载应用 {}  完成", pluginName);
     }
@@ -137,7 +159,9 @@ public class PluginManager implements ApplicationContextAware {
 
         // 从插件工厂获取,这里需要注意的一点是插件工厂如果从自身容器获取不到对象的话,会往主实例中获取
         for (PluginInfo value : pluginCoreModuleCache.values()) {
-            Optional.of(value.getPluginContext().getBeansOfType(clazz)).ifPresent((bean) -> beanList.addAll(bean.values()));
+            if (value.getPluginContext() != null) {
+                Optional.of(value.getPluginContext().getBeansOfType(clazz)).ifPresent((bean) -> beanList.addAll(bean.values()));
+            }
         }
 
         return new ArrayList<>(beanList);
@@ -164,17 +188,19 @@ public class PluginManager implements ApplicationContextAware {
             // 清理监听
             pluginInfo.getPluginProcessorWatcherService().destroy();
             AnnotationConfigApplicationContext pluginContext = pluginInfo.getPluginContext();
-            ClassLoader classLoader = pluginContext.getClassLoader();
-            if (classLoader instanceof URLClassLoader) {
-                ClassLoaderUtil.releaseLoader((URLClassLoader) classLoader);
-                try {
-                    ((URLClassLoader) classLoader).close();
-                    log.info("清理插件: {} 的加载器", jarFileName);
-                } catch (IOException e) {
-                    log.error("load error", e);
+            if (pluginContext != null) {
+                ClassLoader classLoader = pluginContext.getClassLoader();
+                if (classLoader instanceof URLClassLoader) {
+                    ClassLoaderUtil.releaseLoader((URLClassLoader) classLoader);
+                    try {
+                        ((URLClassLoader) classLoader).close();
+                        log.info("清理插件: {} 的加载器", jarFileName);
+                    } catch (IOException e) {
+                        log.error("load error", e);
+                    }
                 }
+                pluginContext.close();
             }
-            pluginContext.close();
             log.debug(">>> 卸载插件 : {}", jarFileName);
         }
     }
@@ -201,9 +227,19 @@ public class PluginManager implements ApplicationContextAware {
 
         private String jarSign;
 
+        private PluginApplicationProperties applicationProperties;
+
         private PluginProcessorWatcherService pluginProcessorWatcherService;
 
         private AnnotationConfigApplicationContext pluginContext;
+
+        public PluginApplicationProperties getApplicationProperties() {
+            return applicationProperties;
+        }
+
+        public void setApplicationProperties(PluginApplicationProperties applicationProperties) {
+            this.applicationProperties = applicationProperties;
+        }
 
         public String getModuleName() {
             return moduleName;
