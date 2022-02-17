@@ -1,11 +1,11 @@
 package com.alibaba.jvm.sandbox.module.manager.util;
 
+import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import com.alibaba.jvm.sandbox.module.manager.model.GenericTypeInfo;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

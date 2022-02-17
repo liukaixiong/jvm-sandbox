@@ -38,14 +38,22 @@ public class DemoServiceImpl implements DemoService {
     }
 
     public String testNormalMethod() {
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        logger.info("正在执行testNormalMethod方法");
         return "testNormalMethod OK!";
     }
 
     private String testPrivateMethod() {
+        logger.info("正在执行testPrivateMethod方法");
         return "testPrivateMethod OK!";
     }
 
     protected String testProtectedMethod() {
+        logger.info("正在执行testProtectedMethod方法");
         return "testProtectedMethod OK!";
     }
 

@@ -51,7 +51,7 @@
                         <configuration>
                             <tasks>
                                 <!-- <delete dir="src/main/webapp/WEB-INF/lib" />-->
-                                <copy todir="E:\\study\\sandbox\\sandbox-module\\manager-plugins"
+                                <copy todir="${sandbox.manager.plugin.dir.path}"
                                       overwrite="true"><!--执行复制操作,todir的值是将要复制jar包到的地方,overwrite是否重写-->
                                     <fileset
                                             dir="${project.build.directory}"><!--${project.build.directory}值是你的target目录-->

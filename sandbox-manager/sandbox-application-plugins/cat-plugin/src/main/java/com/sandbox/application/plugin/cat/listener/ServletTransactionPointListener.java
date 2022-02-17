@@ -63,44 +63,11 @@ public class ServletTransactionPointListener extends AbstractTransactionPointLis
         }
 
         getTransactionThreadLocal().set(transaction);
+    }
 
-        // 初始化HttpAccess
-//        final HttpAccess httpAccess = new HttpAccess(
-//                httpServletRequest.getRemoteAddress(),
-//                httpServletRequest.getMethod(),
-//                httpServletRequest.getRequestURI(),
-//                httpServletRequest.getParameterMap(),
-//                httpServletRequest.getHeader("User-Agent")
-//        );
-
-
-        // 附加到advice上，以便在onReturning()和onThrowing()中取出
-//        advice.attach(httpAccess);
-
-//        final Class<?> classOfHttpServletResponse = advice.getBehavior()
-//                .getDeclaringClass()
-//                .getClassLoader()
-//                .loadClass("javax.servlet.http.HttpServletResponse");
-//
-//        // 替换HttpServletResponse参数
-//        advice.changeParameter(1, InterfaceProxyUtils.intercept(
-//                classOfHttpServletResponse,
-//                advice.getTarget().getClass().getClassLoader(),
-//                advice.getParameterArray()[1],
-//                new InterfaceProxyUtils.MethodInterceptor() {
-//                    @Override
-//                    public Object invoke(InterfaceProxyUtils.MethodInvocation methodInvocation) throws Throwable {
-//                        if (contains(
-//                                new String[]{
-//                                        "setStatus",
-//                                        "sendError"
-//                                },
-//                                methodInvocation.getMethod().getName())) {
-//                            httpAccess.setStatus((Integer) methodInvocation.getArguments()[0]);
-//                        }
-//                        return methodInvocation.proceed();
-//                    }
-//                }));
+    @Override
+    public void beforeCall(Advice advice, int callLineNum, String callJavaClassName, String callJavaMethodName, String callJavaMethodDesc) {
+        System.out.println("--------->>>" + callJavaClassName + "#" + callJavaMethodName + "#" + callJavaMethodDesc + "\t" + callLineNum);
     }
 
     private void builderCrossInfo(IHttpServletRequest httpServletRequest, Transaction transaction) {

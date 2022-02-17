@@ -13,6 +13,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sandbox.version>1.3.3</sandbox.version>
+        <sandbox.dir.path>E:\\study\\sandbox</sandbox.dir.path>
+        <sandbox.module.dir.path>${sandbox.dir.path}\\sandbox-module</sandbox.module.dir.path>
+        <sandbox.manager.plugin.dir.path>${sandbox.module.dir.path}\\manager-plugins</sandbox.manager.plugin.dir.path>
     </properties>
 
     <profiles>

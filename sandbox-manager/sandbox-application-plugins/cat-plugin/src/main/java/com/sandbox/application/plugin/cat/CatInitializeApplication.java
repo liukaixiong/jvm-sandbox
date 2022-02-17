@@ -7,6 +7,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
+ * CAT的环境初始化
+ *
  * @author liukaixiong
  * @Email liukx@elab-plus.com
  * @date 2022/1/18 - 11:29
@@ -23,6 +25,7 @@ public class CatInitializeApplication implements InitializingBean {
             说明一下为什么要有这行代码:
               1. 由于插件是多加载器实现的，你如果在初始化的时候没有指定当前线程的类加载器，在CAT初始化的时候，默认会找当前线程上下文的加载器。
               它是这么找的Thread.currentThread().getContextClassLoader(),这是它的容器查找规则具体可以参考: org.codehaus.plexus.ClassRealmUtil.getContextRealms
+              由于Thread.currentThread().getContextClassLoader()找的是主容器的实例，而该插件是以插件容器运行，主容器可以理解为tomcat加载的，而插件是附着在agent中的，如果从主容器中查找肯定查找不到cat相关的类。
               当时也是花了很大力气,走了很多弯路,才发现. 只要在初始化之前将加载器指定好是直接加载CAT的jar的加载器就不会出现问题,加载完成之后便会直接缓存起来,不会影响下一次运行.
               所以你只需要保证这个方法只执行一次,并且是在cat初始化之前
          */

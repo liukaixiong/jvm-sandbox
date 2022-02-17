@@ -24,6 +24,10 @@ public class EnhanceClassInfo {
      */
     private final String classPattern;
 
+    private final String[] classAnnotation;
+
+    private final String[] classInterfaceTypes;
+
     /**
      * 增强方法表达式，，支持通配符
      */
@@ -43,9 +47,11 @@ public class EnhanceClassInfo {
      */
     private final boolean includeSubClasses;
 
-    @ConstructorProperties({"classPattern", "methodPatterns", "watchTypes", "includeSubClasses"})
-    EnhanceClassInfo(String classPattern, MethodPattern[] methodPatterns, Event.Type[] watchTypes, boolean includeSubClasses) {
+    @ConstructorProperties({"classPattern", "classInterfaceTypes", "classAnnotation", "methodPatterns", "watchTypes", "includeSubClasses"})
+    EnhanceClassInfo(String classPattern, String[] classInterfaceTypes, String[] classAnnotation, MethodPattern[] methodPatterns, Event.Type[] watchTypes, boolean includeSubClasses) {
         this.classPattern = classPattern;
+        this.classInterfaceTypes = classInterfaceTypes;
+        this.classAnnotation = classAnnotation;
         this.methodPatterns = methodPatterns;
         this.watchTypes = watchTypes;
         this.includeSubClasses = includeSubClasses;
@@ -82,12 +88,22 @@ public class EnhanceClassInfo {
         return this.watchTypes;
     }
 
+    public String[] getClassAnnotation() {
+        return classAnnotation;
+    }
+
+    public String[] getClassInterfaceTypes() {
+        return classInterfaceTypes;
+    }
+
     public boolean isIncludeSubClasses() {
         return this.includeSubClasses;
     }
 
     public static class EnhanceModelBuilder {
         private String classPattern;
+        private String[] classAnnotation;
+        private String[] classInterfaceTypes;
         private MethodPattern[] methodPatterns;
         private Event.Type[] watchTypes;
         private boolean includeSubClasses;
@@ -97,6 +113,16 @@ public class EnhanceClassInfo {
 
         public EnhanceModelBuilder classPattern(String classPattern) {
             this.classPattern = classPattern;
+            return this;
+        }
+
+        public EnhanceModelBuilder hasClassAnnotation(String[] classAnnotation) {
+            this.classAnnotation = classAnnotation;
+            return this;
+        }
+
+        public EnhanceModelBuilder hasClassInterfaceTypes(String[] classInterfaceTypes) {
+            this.classInterfaceTypes = classInterfaceTypes;
             return this;
         }
 
@@ -116,7 +142,7 @@ public class EnhanceClassInfo {
         }
 
         public EnhanceClassInfo build() {
-            return new EnhanceClassInfo(this.classPattern, this.methodPatterns, this.watchTypes, this.includeSubClasses);
+            return new EnhanceClassInfo(this.classPattern, this.classInterfaceTypes, this.classAnnotation, this.methodPatterns, this.watchTypes, this.includeSubClasses);
         }
 
         @Override

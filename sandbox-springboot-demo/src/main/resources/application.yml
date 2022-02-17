@@ -27,16 +27,16 @@ spring:
     poolPreparedStatements: true
     filters: stat
     maxPoolPreparedStatementPerConnectionSize: 20
-  sandbox:
-    plugin:
-      register:
-        cat:
-          enhanceConfigs:
-            - classPattern: com.sandbox.demo.service.*
-              methodNames: '*'
-              isEqualsInterface: true
-              adviceNames:
-                - CAT_METHOD_TRANSACTION_POINT
+#  sandbox:
+#    plugin:
+#      register:
+#        cat:
+#          enhanceConfigs:
+#            - classPattern: com.sandbox.demo.service.*
+#              methodNames: '*'
+#              isEqualsInterface: true
+#              adviceNames:
+#                - CAT_METHOD_TRANSACTION_POINT
 server:
   port: 5505
   servlet:
@@ -50,6 +50,7 @@ mybatis-plus:
       id-type: auto
   configuration:
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
 
 #  config-location: classpath:/mybatis/mybatis-config.xml
 #mybatis:

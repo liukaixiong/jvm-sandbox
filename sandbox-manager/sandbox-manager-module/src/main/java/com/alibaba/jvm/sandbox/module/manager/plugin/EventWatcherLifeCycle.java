@@ -98,6 +98,9 @@ public class EventWatcherLifeCycle implements PluginProcessorWatcherService {
                 builder4Class = builder4Class.includeSubClasses();
             }
 
+            builder4Class.hasInterfaceTypes(eci.getClassInterfaceTypes());
+            builder4Class.hasAnnotationTypes(eci.getClassAnnotation());
+
             StringBuilder methods = new StringBuilder();
             for (EnhanceClassInfo.MethodPattern mp : eci.getMethodPatterns()) {
                 behavior = builder4Class.onBehavior(mp.getMethodName());
@@ -116,7 +119,7 @@ public class EventWatcherLifeCycle implements PluginProcessorWatcherService {
             pluginEventWatcherInfo.setMethodName(methods.toString());
 
             if (behavior != null) {
-                EventWatcher watcher = behavior.onWatch(new RouterAdviceListener(methodAdviceInvoke));
+                EventWatcher watcher = behavior.onWatching().withCall().onWatch(new RouterAdviceListener(methodAdviceInvoke));
                 int watchId = watcher.getWatchId();
                 log.info("add watcher success,moduleName={},pluginName={},watcherId={}", moduleName, pluginName, watchId);
                 eventWatcherList.add(watcher);
