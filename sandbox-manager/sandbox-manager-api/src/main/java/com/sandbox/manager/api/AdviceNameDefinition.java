@@ -24,9 +24,13 @@ public enum AdviceNameDefinition {
      */
     PRINT_LOG("关键日志"),
 
+    DUBBO_PRODUCER("Dubbo生产者"),
+    DUBBO_CONSUMER("Dubbo消费者"),
+
     CAT_METHOD_TRANSACTION_POINT("CAT方法事务埋点"),
 
     CAT_URL_TRANSACTION_POINT("CAT请求事务埋点"),
+    CAT_CompletableFuture_POINT("CAT请求事务埋点"),
 
     CAT_MYBATIS_TRANSACTION_POINT("CAT_Mybatis埋点"),
 

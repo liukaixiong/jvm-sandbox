@@ -47,14 +47,17 @@ public class EnhanceClassInfo {
      */
     private final boolean includeSubClasses;
 
-    @ConstructorProperties({"classPattern", "classInterfaceTypes", "classAnnotation", "methodPatterns", "watchTypes", "includeSubClasses"})
-    EnhanceClassInfo(String classPattern, String[] classInterfaceTypes, String[] classAnnotation, MethodPattern[] methodPatterns, Event.Type[] watchTypes, boolean includeSubClasses) {
+    private final boolean includeBootstrap;
+
+    @ConstructorProperties({"classPattern", "classInterfaceTypes", "classAnnotation", "methodPatterns", "watchTypes", "includeSubClasses", "includeBootstrap"})
+    EnhanceClassInfo(String classPattern, String[] classInterfaceTypes, String[] classAnnotation, MethodPattern[] methodPatterns, Event.Type[] watchTypes, boolean includeSubClasses, boolean includeBootstrap) {
         this.classPattern = classPattern;
         this.classInterfaceTypes = classInterfaceTypes;
         this.classAnnotation = classAnnotation;
         this.methodPatterns = methodPatterns;
         this.watchTypes = watchTypes;
         this.includeSubClasses = includeSubClasses;
+        this.includeBootstrap = includeBootstrap;
     }
 
     public static EnhanceModelBuilder builder() {
@@ -72,6 +75,7 @@ public class EnhanceClassInfo {
                 .classPattern(behavior.getClassPattern())
                 .methodPatterns(MethodPattern.transform(behavior.getMethodPatterns()))
                 .includeSubClasses(behavior.isIncludeSubClasses())
+                .includeBootstrap(behavior.isIncludeBootstrap())
                 .watchTypes(Event.Type.BEFORE, Event.Type.RETURN, Event.Type.THROWS)
                 .build();
     }
@@ -100,6 +104,10 @@ public class EnhanceClassInfo {
         return this.includeSubClasses;
     }
 
+    public boolean isIncludeBootstrap() {
+        return includeBootstrap;
+    }
+
     public static class EnhanceModelBuilder {
         private String classPattern;
         private String[] classAnnotation;
@@ -107,6 +115,7 @@ public class EnhanceClassInfo {
         private MethodPattern[] methodPatterns;
         private Event.Type[] watchTypes;
         private boolean includeSubClasses;
+        private boolean includeBootstrap;
 
         EnhanceModelBuilder() {
         }
@@ -141,8 +150,13 @@ public class EnhanceClassInfo {
             return this;
         }
 
+        public EnhanceModelBuilder includeBootstrap(boolean includeBootstrap) {
+            this.includeBootstrap = includeBootstrap;
+            return this;
+        }
+
         public EnhanceClassInfo build() {
-            return new EnhanceClassInfo(this.classPattern, this.classInterfaceTypes, this.classAnnotation, this.methodPatterns, this.watchTypes, this.includeSubClasses);
+            return new EnhanceClassInfo(this.classPattern, this.classInterfaceTypes, this.classAnnotation, this.methodPatterns, this.watchTypes, this.includeSubClasses, this.includeBootstrap);
         }
 
         @Override

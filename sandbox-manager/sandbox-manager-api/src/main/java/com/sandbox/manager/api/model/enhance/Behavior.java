@@ -10,6 +10,7 @@ public class Behavior {
     private String classPattern;
     private String[] methodPatterns;
     private boolean includeSubClasses;
+    private boolean includeBootstrap;
 
     public Behavior() {
     }
@@ -23,6 +24,13 @@ public class Behavior {
         this.classPattern = classPattern;
         this.methodPatterns = methodPatterns;
         this.includeSubClasses = includeSubClasses;
+    }
+
+    public Behavior(String classPattern, String[] methodPatterns, boolean includeSubClasses, boolean includeBootstrap) {
+        this.classPattern = classPattern;
+        this.methodPatterns = methodPatterns;
+        this.includeSubClasses = includeSubClasses;
+        this.includeBootstrap = includeBootstrap;
     }
 
     public String getClassPattern() {
@@ -47,5 +55,13 @@ public class Behavior {
 
     public void setIncludeSubClasses(boolean includeSubClasses) {
         this.includeSubClasses = includeSubClasses;
+    }
+
+    public boolean isIncludeBootstrap() {
+        return includeBootstrap;
+    }
+
+    public void setIncludeBootstrap(boolean includeBootstrap) {
+        this.includeBootstrap = includeBootstrap;
     }
 }

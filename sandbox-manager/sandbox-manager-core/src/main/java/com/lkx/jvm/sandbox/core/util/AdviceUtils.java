@@ -2,6 +2,7 @@ package com.lkx.jvm.sandbox.core.util;
 
 import com.alibaba.jvm.sandbox.api.listener.ext.Advice;
 import com.google.common.base.Stopwatch;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -30,6 +31,25 @@ public class AdviceUtils {
      */
     public static String getMethodFullName(Advice advice) {
         return advice.getBehavior().getDeclaringClass().getName() + "#" + advice.getBehavior().getName();
+    }
+
+    /**
+     * 利用反射來填充用戶的
+     * @param advice
+     * @param index
+     * @param methodName
+     * @param clazz
+     * @param args
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> T getObjectValue(Advice advice,int index,String methodName,Class<T> clazz,Object... args) throws Exception {
+        Object value = MethodUtils.invokeMethod(advice.getParameterArray()[index],methodName,args);
+        if(value == null){
+            return null;
+        }
+        return (T) value;
     }
 
     public interface MethodSupplier {

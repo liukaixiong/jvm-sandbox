@@ -65,9 +65,22 @@ public class ServletTransactionPointListener extends AbstractTransactionPointLis
         getTransactionThreadLocal().set(transaction);
     }
 
+//    @Override
+//    public void beforeCall(Advice advice, int callLineNum, String callJavaClassName, String callJavaMethodName, String callJavaMethodDesc) {
+//        System.out.println("--------->>>" + callJavaClassName + "#" + callJavaMethodName + "#" + callJavaMethodDesc + "\t" + callLineNum);
+//    }
+
+
     @Override
-    public void beforeCall(Advice advice, int callLineNum, String callJavaClassName, String callJavaMethodName, String callJavaMethodDesc) {
-        System.out.println("--------->>>" + callJavaClassName + "#" + callJavaMethodName + "#" + callJavaMethodDesc + "\t" + callLineNum);
+    public void after(Advice advice) throws Throwable {
+        final IHttpServletResponse httpServletResponse = InterfaceProxyUtils.puppet(
+                IHttpServletResponse.class,
+                advice.getParameterArray()[1]
+        );
+
+        httpServletResponse.setHeader("trace_id",Cat.getCurrentMessageId());
+
+        super.after(advice);
     }
 
     private void builderCrossInfo(IHttpServletRequest httpServletRequest, Transaction transaction) {
@@ -123,6 +136,12 @@ public class ServletTransactionPointListener extends AbstractTransactionPointLis
         String getHeader(String name);
 
         String getContentType();
+
+    }
+
+    interface IHttpServletResponse {
+
+        public void setHeader(String name, String value);
 
     }
 

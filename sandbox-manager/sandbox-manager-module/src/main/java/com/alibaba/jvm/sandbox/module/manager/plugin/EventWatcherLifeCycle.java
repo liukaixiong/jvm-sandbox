@@ -98,6 +98,10 @@ public class EventWatcherLifeCycle implements PluginProcessorWatcherService {
                 builder4Class = builder4Class.includeSubClasses();
             }
 
+            if(eci.isIncludeBootstrap()){
+                builder4Class = builder4Class.includeBootstrap();
+            }
+
             builder4Class.hasInterfaceTypes(eci.getClassInterfaceTypes());
             builder4Class.hasAnnotationTypes(eci.getClassAnnotation());
 

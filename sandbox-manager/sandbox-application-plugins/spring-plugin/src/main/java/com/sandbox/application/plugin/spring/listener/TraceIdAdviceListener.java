@@ -6,6 +6,8 @@ import com.sandbox.manager.api.AdviceNameDefinition;
 import com.sandbox.manager.api.MethodAdviceInvoke;
 import com.sandbox.manager.api.Trace;
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -20,7 +22,7 @@ import java.util.Map;
  */
 @Component
 public class TraceIdAdviceListener implements MethodAdviceInvoke {
-
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Override
     public AdviceNameDefinition featureName() {
         return AdviceNameDefinition.TRACE_ID;
@@ -37,6 +39,10 @@ public class TraceIdAdviceListener implements MethodAdviceInvoke {
         if (trace != null) {
             String currentMessageId = trace.getId();
             Object returnObj = advice.getReturnObj();
+            if(returnObj == null){
+                return ;
+            }
+            // logger.info(" trace id : "+currentMessageId);
             if (returnObj instanceof Map) {
                 ((Map<Object, Object>) returnObj).put("traceId", currentMessageId);
             } else if (returnObj instanceof Collection || returnObj.getClass().isPrimitive()) {

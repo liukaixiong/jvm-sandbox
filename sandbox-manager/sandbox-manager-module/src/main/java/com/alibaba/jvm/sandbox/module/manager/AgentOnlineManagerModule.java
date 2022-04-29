@@ -84,10 +84,10 @@ public class AgentOnlineManagerModule implements Module, LoadCompleted, SpringLo
      */
     public void refreshManagerFactory() throws Exception {
         String pluginDirName = ManagerConstants.PLUGIN_DIR_NAME;
-//        String pluginPath = configInfo.getUserModuleLibPaths()[0] + "\\" + pluginDirName;
+        String pluginPath = configInfo.getUserModuleLibPaths()[0] + "\\" + pluginDirName;
 
         // todo 得修改
-        String pluginPath = "E:\\study\\sandbox\\sandbox-module\\manager-plugins";
+        // String pluginPath = "E:\\study\\sandbox\\sandbox-module\\manager-plugins";
 
         // 构建工厂实例
         this.annotationConfigApplicationContext = new AnnotationConfigApplicationContext();

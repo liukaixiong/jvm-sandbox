@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 public abstract class AbstractTransactionPointListener implements MethodAdviceInvoke {
 
-    private final ThreadLocal<Transaction> transactionThreadLocal = new ThreadLocal<>();
+    protected final ThreadLocal<Transaction> transactionThreadLocal = new ThreadLocal<>();
 
     @Override
     public boolean preHandler(Advice advice) {
